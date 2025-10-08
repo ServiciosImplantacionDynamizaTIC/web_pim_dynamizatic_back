@@ -1,4 +1,4 @@
-import {
+﻿import {
   Count,
   CountSchema,
   Filter,
@@ -55,7 +55,49 @@ export class IconoController {
   async count(
     @param.where(Icono) where?: Where<Icono>,
   ): Promise<Count> {
-    return this.iconoRepository.count(where);
+    const dataSource = this.iconoRepository.dataSource;
+    //Aplicamos filtros
+    let filtros = '';
+    //Obtiene los filtros
+    filtros += ` WHERE 1=1`
+    if (where) {
+      for (const [key] of Object.entries(where)) {
+        if (key === 'and' || key === 'or') {
+          {
+            let first = true
+            for (const [subKey, subValue] of Object.entries((where as any)[key])) {
+              if (subValue !== '' && subValue != null) {
+                if (!first) {
+                  if (key === 'and') {
+                    filtros += ` AND`;
+                  }
+                  else {
+                    filtros += ` OR`;
+                  }
+                }
+                else {
+                  filtros += ' AND ('
+                }
+                if (/^-?\d+(\.\d+)?$/.test(subValue as string)) {
+                  filtros += ` ${subKey} = ${subValue}`;
+                }
+                else {
+                  filtros += ` ${subKey} LIKE '%${subValue}%'`;
+                }
+                first = false
+              }
+            }
+            if (!first) {
+              filtros += `)`;
+            }
+          }
+        }
+
+      }
+    }
+    const query = `SELECT COUNT(*) AS count FROM icono${filtros}`;
+    const registros = await dataSource.execute(query, []);
+    return registros[0];
   }
 
   @get('/iconos')
@@ -148,3 +190,4 @@ export class IconoController {
     await this.iconoRepository.deleteById(id);
   }
 }
+

@@ -1,4 +1,4 @@
-import {
+﻿import {
   Count,
   CountSchema,
   Filter,
@@ -200,15 +200,15 @@ export class PlantillaEmailController {
       const empresaRegistro = await dataSourceEmpresa.execute(query);
 
 
-      // Preparo la configuración para enviar el correo
+      // Preparo la configuraciÃ³n para enviar el correo
       const transporter = nodemailer.createTransport({
         host: empresaRegistro[0]['servicio'],// Servidor SMTP de Outlook
-        port: 587,                 // Puerto estándar para conexiones seguras con STARTTLS
+        port: 587,                 // Puerto estÃ¡ndar para conexiones seguras con STARTTLS
         secure: false,             // false para STARTTLS
         requireTLS: true,
         auth: {
-          user: empresaRegistro[0]['email'], // Dirección de correo de Outlook
-          pass: empresaRegistro[0]['password'], // Contraseña
+          user: empresaRegistro[0]['email'], // DirecciÃ³n de correo de Outlook
+          pass: empresaRegistro[0]['password'], // ContraseÃ±a
         },
         tls: {
           rejectUnauthorized: false
@@ -226,7 +226,7 @@ export class PlantillaEmailController {
       query = `SELECT * FROM archivo WHERE id_tabla=${plantillaRegistro[0]['id']};`;
       const archivos = await dataSourceArchivo.execute(query);
 
-      // Incluyo las imágenes insertadas en la plantilla
+      // Incluyo las imÃ¡genes insertadas en la plantilla
       const base64Images = htmlContent.match(/src="data:image\/[^;]+;base64[^"]+"/g) || [];
       const attachments = base64Images.map((img: { match: (arg0: RegExp) => any[]; }, index: any) => {
         const base64Data = img.match(/base64,([^"]+)/)[1];
@@ -264,12 +264,12 @@ export class PlantillaEmailController {
       transporter.sendMail(parametrosMail, (error, info) => {
         if (error) {
           console.error('Error al enviar el email:', error);
-          // Aquí puedes implementar lógica para reintentos, notificaciones, etc.
+          // AquÃ­ puedes implementar lÃ³gica para reintentos, notificaciones, etc.
           return;
         }
       })
 
-      return { status: 'OK', message: 'Correo enviado con éxito.' };
+      return { status: 'OK', message: 'Correo enviado con Ã©xito.' };
     }
 
     catch (error) {
@@ -310,15 +310,15 @@ export class PlantillaEmailController {
       const empresaRegistro = await dataSourceEmpresa.execute(query);
 
 
-      // Preparo la configuración para enviar el correo
+      // Preparo la configuraciÃ³n para enviar el correo
       const transporter = nodemailer.createTransport({
         host: empresaRegistro[0]['servicio'],// Servidor SMTP de Outlook
-        port: 587,                 // Puerto estándar para conexiones seguras con STARTTLS
+        port: 587,                 // Puerto estÃ¡ndar para conexiones seguras con STARTTLS
         secure: false,             // false para STARTTLS
         requireTLS: true,
         auth: {
-          user: empresaRegistro[0]['email'], // Dirección de correo de Outlook
-          pass: empresaRegistro[0]['password'], // Contraseña
+          user: empresaRegistro[0]['email'], // DirecciÃ³n de correo de Outlook
+          pass: empresaRegistro[0]['password'], // ContraseÃ±a
         },
         tls: {
           rejectUnauthorized: false
@@ -346,7 +346,7 @@ export class PlantillaEmailController {
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Creación de cuenta en nuestro sistema</title>
+  <title>CreaciÃ³n de cuenta en nuestro sistema</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -405,14 +405,14 @@ export class PlantillaEmailController {
     </div>
     <div class="content">
       <p>Hola,</p>
-      <p>Se está creando una cuenta en nuestro sistema para usted. Para completar el proceso de registro y activar su cuenta, puede escanear el código QR que se muestra a continuación con su dispositivo móvil.</p>
+      <p>Se estÃ¡ creando una cuenta en nuestro sistema para usted. Para completar el proceso de registro y activar su cuenta, puede escanear el cÃ³digo QR que se muestra a continuaciÃ³n con su dispositivo mÃ³vil.</p>
       <div class="qr">
-        <img src="cid:qrcode@unique" alt="Código QR">
+        <img src="cid:qrcode@unique" alt="CÃ³digo QR">
       </div>
       <p>o pulsar el siguiente enlance: <a href="${url}">${url}</a></p>
-      <p>Una vez escaneado el código o pulsado el enlace, se le redirigirá a la página de creación de cuenta donde podrá completar el registro y establecer su contraseña.</p>
+      <p>Una vez escaneado el cÃ³digo o pulsado el enlace, se le redirigirÃ¡ a la pÃ¡gina de creaciÃ³n de cuenta donde podrÃ¡ completar el registro y establecer su contraseÃ±a.</p>
       <p>Si tiene alguna duda o necesita ayuda, no dude en contactarnos.</p>
-      <p>¡Gracias por confiar en nosotros!</p>
+      <p>Â¡Gracias por confiar en nosotros!</p>
     </div>
     <div class="footer">
       <p>${empresaRegistro[0].nombre} - Todos los derechos reservados.</p>
@@ -425,7 +425,7 @@ export class PlantillaEmailController {
       let parametrosMail = {
         from: empresaRegistro[0]['email'],
         to: emails.join(', '),
-        subject: `Creación de cuenta en ${empresaRegistro[0]['nombre']}`,
+        subject: `CreaciÃ³n de cuenta en ${empresaRegistro[0]['nombre']}`,
         html: htmlContent,
         attachments: [{
           filename: 'qrcode.png',
@@ -439,12 +439,12 @@ export class PlantillaEmailController {
       transporter.sendMail(parametrosMail, (error, info) => {
         if (error) {
           console.error('Error al enviar el email:', error);
-          // Aquí puedes implementar lógica para reintentos, notificaciones, etc.
+          // AquÃ­ puedes implementar lÃ³gica para reintentos, notificaciones, etc.
           return;
         }
       })
 
-      return { status: 'OK', message: 'Correo enviado con éxito.' };
+      return { status: 'OK', message: 'Correo enviado con Ã©xito.' };
     }
 
     catch (error) {
@@ -503,7 +503,7 @@ export class PlantillaEmailController {
     if (filter?.order) {
       filtros += ` ORDER BY ${filter.order}`;
     }
-    // Agregar paginación
+    // Agregar paginaciÃ³n
     if (filter?.limit) {
       filtros += ` LIMIT ${filter?.limit}`;
     }
@@ -568,3 +568,4 @@ export class PlantillaEmailController {
 
   }
 }
+

@@ -1,4 +1,4 @@
-import {
+﻿import {
   Count,
   CountSchema,
   Filter,
@@ -148,3 +148,4 @@ export class LogSincronizacionController {
     await this.logSincronizacionRepository.deleteById(id);
   }
 }
+

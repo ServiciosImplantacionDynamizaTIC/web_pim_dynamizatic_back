@@ -1,4 +1,4 @@
-import {
+﻿import {
   Count,
   CountSchema,
   Filter,
@@ -160,7 +160,7 @@ export class UsuarioPasswordHistoricoController {
     if (filter?.order) {
       filtros += ` ORDER BY ${filter.order}`;
     }
-    // Agregar paginación
+    // Agregar paginaciÃ³n
     if (filter?.limit) {
       filtros += ` LIMIT ${filter?.limit}`;
     }
@@ -244,3 +244,4 @@ export class UsuarioPasswordHistoricoController {
     await this.usuarioPasswordHistoricoRepository.deleteById(id);
   }
 }
+

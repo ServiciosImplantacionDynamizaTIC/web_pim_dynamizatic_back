@@ -1,4 +1,4 @@
-import {
+﻿import {
   Count,
   CountSchema,
   Filter,
@@ -208,7 +208,7 @@ export class TipoArchivoController {
     if (filter?.order) {
       filtros += ` ORDER BY ${filter.order}`;
     }
-    // Agregar paginación
+    // Agregar paginaciÃ³n
     if (filter?.limit) {
       filtros += ` LIMIT ${filter?.limit}`;
     }
@@ -271,3 +271,4 @@ export class TipoArchivoController {
     return registros;
   }
 }
+

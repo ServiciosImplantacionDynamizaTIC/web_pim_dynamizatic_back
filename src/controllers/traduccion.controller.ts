@@ -1,4 +1,4 @@
-import {
+﻿import {
   Count,
   CountSchema,
   Filter,
@@ -152,7 +152,7 @@ export class TraduccionController {
       let query = `SELECT * FROM traduccion WHERE id = ?`;
       const result = await dataSource.execute(query, [id]);
       if (result.length === 0) {
-        throw new HttpErrors.NotFound('No se encontró la traducción con el ID proporcionado.');
+        throw new HttpErrors.NotFound('No se encontrÃ³ la traducciÃ³n con el ID proporcionado.');
       }
       const traduccion = result[0];
       //Borra las traducciones con la misma clave
@@ -175,35 +175,35 @@ export class TraduccionController {
   async vistaTraduccionIdioma(@param.filter(Traduccion) filter?: Filter<Object>,): Promise<Object[]> {
     const dataSource = this.traduccionRepository.dataSource;
     
-    // Obtiene los idiomas activos ordenados alfabéticamente
+    // Obtiene los idiomas activos ordenados alfabÃ©ticamente
     const idiomasQuery = `SELECT id, iso, nombre FROM idioma ORDER BY nombre ASC`;
     const idiomas = await dataSource.execute(idiomasQuery);
     
-    // Construye la consulta dinámica de pivote
+    // Construye la consulta dinÃ¡mica de pivote
     let selectColumns = 't.clave, MIN(t.id) as id';  // Agregamos el ID del primer registro
     let pivotColumns = '';
     
-    // Ordena los idiomas alfabéticamente antes de procesarlos
+    // Ordena los idiomas alfabÃ©ticamente antes de procesarlos
     const idiomasOrdenados = [...idiomas].sort((a, b) => a.nombre.localeCompare(b.nombre));
     
     for (const idioma of idiomasOrdenados) {
       // Usa el nombre del idioma como alias de columna, reemplazando espacios con guiones bajos
       const columnName = idioma.nombre.replace(/\s+/g, '_').toLowerCase();
-      // Agrega el valor de la traducción
+      // Agrega el valor de la traducciÃ³n
       selectColumns += `, MAX(CASE WHEN t.idioma_id = ${idioma.id} THEN t.valor END) as "${columnName}"`;
-      // Agrega el ID del registro de traducción
+      // Agrega el ID del registro de traducciÃ³n
       selectColumns += `, MAX(CASE WHEN t.idioma_id = ${idioma.id} THEN t.id END) as "${columnName}Id"`;
       pivotColumns += ` LEFT JOIN traduccion t${idioma.id} ON t.clave = t${idioma.id}.clave AND t${idioma.id}.idioma_id = ${idioma.id}`;
     }
 
-    // Construye la consulta base con el orden correcto de las cláusulas
+    // Construye la consulta base con el orden correcto de las clÃ¡usulas
     let query = `
       SELECT ${selectColumns}
       FROM traduccion t
       ${pivotColumns}
     `;
 
-    // Aplica la cláusula WHERE si existen filtros
+    // Aplica la clÃ¡usula WHERE si existen filtros
     if (filter?.where) {
       query += ` WHERE 1=1`;
       for (const [key] of Object.entries(filter?.where)) {
@@ -237,17 +237,17 @@ export class TraduccionController {
       }
     }
 
-    // Agrega la cláusula GROUP BY
+    // Agrega la clÃ¡usula GROUP BY
     query += ` GROUP BY t.clave`;
 
-    // Agrega la cláusula ORDER BY
+    // Agrega la clÃ¡usula ORDER BY
     if (filter?.order) {
       query += ` ORDER BY ${filter.order}`;
     } else {
       query += ` ORDER BY t.clave ASC`;
     }
 
-    // Agrega LIMIT y OFFSET para la paginación
+    // Agrega LIMIT y OFFSET para la paginaciÃ³n
     if (filter?.limit) {
       query += ` LIMIT ${filter?.limit}`;
     }
@@ -312,7 +312,7 @@ export class TraduccionController {
 
   @get('/buscarTraduccion')
   @response(200, {
-    description: 'Devuelve la traducción basada en el código ISO',
+    description: 'Devuelve la traducciÃ³n basada en el cÃ³digo ISO',
     content: {'application/json': {schema: {type: 'object'}}},
   })
   async buscarTraduccion(
@@ -330,3 +330,4 @@ export class TraduccionController {
   }
 
 }
+
