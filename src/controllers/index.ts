@@ -1,7 +1,6 @@
 export * from './ping.controller';
 export * from './usuarios.controller';
 export * from './usuario-credenciales.controller';
-export * from './log-usuario.controller';
 export * from './archivo.controller';
 export * from './idioma.controller';
 export * from './calendarios-disponibilidad.controller';

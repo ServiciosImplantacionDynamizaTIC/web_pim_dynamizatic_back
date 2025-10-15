@@ -25,6 +25,7 @@ import { inject } from '@loopback/core';
 import path, { join } from 'path';
 import { log } from 'console';
 import { promises as fs } from 'fs';
+import { SqlFilterUtil } from '../utils/sql-filter.util';
 //
 //Cambiamos el modelo por defecto de la bbdd para añadir el campo calculado AlergiaConMiniatura
 //
@@ -70,48 +71,7 @@ export class EmpresaController {
     @param.where(Empresa) where?: Where<Empresa>,
   ): Promise<Count> {
     const dataSource = this.empresaRepository.dataSource;
-    //Aplicamos filtros
-    let filtros = '';
-    //Obtiene los filtros
-    filtros += ` WHERE 1=1`
-    if (where) {
-      for (const [key] of Object.entries(where)) {
-        if (key === 'and' || key === 'or') {
-          {
-            let first = true
-            for (const [subKey, subValue] of Object.entries((where as any)[key])) {
-              if (subValue !== '' && subValue != null) {
-                if (!first) {
-                  if (key === 'and') {
-                    filtros += ` AND`;
-                  }
-                  else {
-                    filtros += ` OR`;
-                  }
-                }
-                else {
-                  filtros += ' AND ('
-                }
-                if (/^-?\d+(\.\d+)?$/.test(subValue as string)) {
-                  filtros += ` ${subKey} = ${subValue}`;
-                }
-                else {
-                  filtros += ` ${subKey} LIKE '%${subValue}%'`;
-                }
-                first = false
-              }
-            }
-            if (!first) {
-              filtros += `)`;
-            }
-          }
-        }
-
-      }
-    }
-    const query = `SELECT COUNT(*) AS count FROM empresa${filtros}`;
-    const registros = await dataSource.execute(query, []);
-    return registros[0];
+    return await SqlFilterUtil.ejecutarQueryCount(dataSource, 'empresa', where);
   }
 
   @get('/empresas')
@@ -132,8 +92,9 @@ export class EmpresaController {
     //
     // Recuperamos los registros y llamamos a la función procesaRegistrosConImagenMiniatura que nos incluye las imagenMiniatura en la consulta
     //
-    const registros = await this.empresaRepository.find(filter);
-    return registros
+    const dataSource = this.empresaRepository.dataSource;
+    const camposSelect = "id, codigo, nombre, descripcion, activo_sn as activoSn, tiempo_inactividad as tiempoInactividad"
+    return await SqlFilterUtil.ejecutarQuerySelect(dataSource, 'empresa', filter, camposSelect);
   }
 
   @patch('/empresas')

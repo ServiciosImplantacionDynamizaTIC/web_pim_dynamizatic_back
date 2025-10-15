@@ -13,16 +13,6 @@ export class Empresa extends Entity {
   })
   id?: number;
 
-  @property({
-    type: 'number',
-    required: true,
-    jsonSchema: {nullable: false},
-    precision: 5,
-    scale: 0,
-    generated: false,
-    mysql: {columnName: 'moneda_id', dataType: 'smallint', dataLength: null, dataPrecision: 5, dataScale: 0, nullable: 'N', generated: false},
-  })
-  monedaId: number;
 
   @property({
     type: 'string',
@@ -54,29 +44,11 @@ export class Empresa extends Entity {
   @property({
     type: 'string',
     jsonSchema: {nullable: true},
-    length: 250,
+    length: 1,
     generated: false,
-    mysql: {columnName: 'email', dataType: 'varchar', dataLength: 250, dataPrecision: null, dataScale: null, nullable: 'Y', generated: false},
+    mysql: {columnName: 'activo_sn', dataType: 'varchar', dataLength: 1, dataPrecision: null, dataScale: null, nullable: 'Y', generated: false, default: 'S'},
   })
-  email?: string;
-
-  @property({
-    type: 'string',
-    jsonSchema: {nullable: true},
-    length: 100,
-    generated: false,
-    mysql: {columnName: 'password', dataType: 'varchar', dataLength: 100, dataPrecision: null, dataScale: null, nullable: 'Y', generated: false},
-  })
-  password?: string;
-
-  @property({
-    type: 'string',
-    jsonSchema: {nullable: true},
-    length: 100,
-    generated: false,
-    mysql: {columnName: 'servicio', dataType: 'varchar', dataLength: 45, dataPrecision: null, dataScale: null, nullable: 'Y', generated: false},
-  })
-  servicio?: string;
+  activoSn?: string;
 
   @property({
     type: 'date',
@@ -121,7 +93,7 @@ export class Empresa extends Entity {
     precision: 11,
     scale: 0,
     generated: false,
-    mysql: {columnName: 'tiempoInactividad', dataType: 'int', dataLength: null, dataPrecision: 11, dataScale: 0, nullable: 'Y', generated: false},
+    mysql: {columnName: 'tiempo_inactividad', dataType: 'int', dataLength: null, dataPrecision: 11, dataScale: 0, nullable: 'Y', generated: false},
   })
   tiempoInactividad: number;
 

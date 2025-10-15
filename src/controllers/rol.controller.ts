@@ -166,7 +166,7 @@ export class RolController {
     if (filter?.offset) {
       filtros += ` OFFSET ${filter?.offset}`;
     }
-    const query = `SELECT * FROM rol${filtros}`;
+    const query = `SELECT id, nombre, activo_sn as activoSn FROM rol${filtros}`;
     const registros = await dataSource.execute(query);
     return registros;
   }

@@ -1,7 +1,7 @@
 import {inject} from '@loopback/core';
 import {DefaultCrudRepository} from '@loopback/repository';
 import {BbddmysqlDataSource} from '../datasources';
-import {LogAcceso, LogAccesoRelations} from '../models/log-acceso.model';
+import {LogAcceso, LogAccesoRelations} from '../models';
 
 export class LogAccesoRepository extends DefaultCrudRepository<
   LogAcceso,

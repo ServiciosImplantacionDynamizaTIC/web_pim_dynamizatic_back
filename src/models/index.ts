@@ -1,7 +1,6 @@
 export * from './archivo.model';
 export * from './calendarios-disponibilidad.model';
 export * from './idioma.model';
-export * from './log-usuario.model';
 export * from './mensaje.model';
 export * from './mensaje-plantilla.model';
 export * from './mensaje-plantilla-categoria.model';
@@ -23,3 +22,4 @@ export * from './empresa.model';
 export * from './tipo-usuario-usuario.model';
 export * from './lista-permisos.model';
 export * from './plantilla-email.model';
+export * from './log-acceso.model';

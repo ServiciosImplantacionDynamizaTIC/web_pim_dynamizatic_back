@@ -1,7 +1,6 @@
 export * from './archivo.repository';
 export * from './calendarios-disponibilidad.repository';
 export * from './idioma.repository';
-export * from './log-usuario.repository';
 export * from './mensaje-plantilla-categoria.repository';
 export * from './mensaje-plantilla.repository';
 export * from './mensaje-tipo.repository';

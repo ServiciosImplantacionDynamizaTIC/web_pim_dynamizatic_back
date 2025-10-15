@@ -45,13 +45,20 @@ export class SqlFilterUtil {
 
   /**
    * Construye la cláusula ORDER BY
-   * @param order - Array de orden de LoopBack
+   * @param order - Array de orden de LoopBack o string
    * @returns String con la cláusula ORDER BY
    */
-  static construirClausulaOrder(order?: string[]): string {
-    if (order && order.length > 0) {
-      return ` ORDER BY ${order.join(', ')}`;
+  static construirClausulaOrder(order?: string[] | string): string {
+    if (!order) {
+      return '';
     }
+    
+    if (Array.isArray(order) && order.length > 0) {
+      return ` ORDER BY ${order.join(', ')}`;
+    } else if (typeof order === 'string' && order.trim().length > 0) {
+      return ` ORDER BY ${order}`;
+    }
+    
     return '';
   }
 
