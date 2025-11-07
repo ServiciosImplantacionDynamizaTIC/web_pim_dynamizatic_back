@@ -507,6 +507,7 @@ export class PlantillaEmailController {
     if (filter?.limit) {
       filtros += ` LIMIT ${filter?.limit}`;
     }
+    
     if (filter?.offset) {
       filtros += ` OFFSET ${filter?.offset}`;
     }
