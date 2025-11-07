@@ -506,8 +506,7 @@ export class PlantillaEmailController {
     // Agregar paginaciÃ³n
     if (filter?.limit) {
       filtros += ` LIMIT ${filter?.limit}`;
-    }
-    
+    }    
     if (filter?.offset) {
       filtros += ` OFFSET ${filter?.offset}`;
     }
