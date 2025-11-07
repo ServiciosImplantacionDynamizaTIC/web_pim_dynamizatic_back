@@ -1,6 +1,6 @@
 import {inject} from '@loopback/core';
 import {DefaultCrudRepository} from '@loopback/repository';
-import {BbddmysqlDataSource} from '../datasources';
+import {ApiBackendDataSource} from '../datasources';
 import {PlantillaEmail, PlantillaEmailRelations} from '../models';
 
 export class PlantillaEmailRepository extends DefaultCrudRepository<
@@ -9,7 +9,7 @@ export class PlantillaEmailRepository extends DefaultCrudRepository<
   PlantillaEmailRelations
 > {
   constructor(
-    @inject('datasources.Bbddmysql') dataSource: BbddmysqlDataSource,
+    @inject('datasources.ApiBackend') dataSource: ApiBackendDataSource,
   ) {
     super(PlantillaEmail, dataSource);
   }

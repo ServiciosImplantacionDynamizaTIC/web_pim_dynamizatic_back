@@ -1,6 +1,6 @@
 import {inject} from '@loopback/core';
 import {DefaultCrudRepository} from '@loopback/repository';
-import {BbddmysqlDataSource} from '../datasources';
+import {ApiBackendDataSource} from '../datasources';
 import {Atributo, AtributoRelations} from '../models/atributo.model';
 
 export class AtributoRepository extends DefaultCrudRepository<
@@ -9,7 +9,7 @@ export class AtributoRepository extends DefaultCrudRepository<
   AtributoRelations
 > {
   constructor(
-    @inject('datasources.Bbddmysql') dataSource: BbddmysqlDataSource,
+    @inject('datasources.ApiBackend') dataSource: ApiBackendDataSource,
   ) {
     super(Atributo, dataSource);
   }

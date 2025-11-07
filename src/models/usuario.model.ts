@@ -2,7 +2,7 @@ import {Entity, model, property, hasOne} from '@loopback/repository';
 import {UsuarioCredenciales} from './usuario-credenciales.model';
 
 @model({
-  settings: {idInjection: false, mysql: {schema: 'bbddmysql', table: 'usuario'}}
+  settings: {idInjection: false, mysql: {schema: 'pim_dynamizatic', table: 'usuario'}}
 })
 export class Usuario extends Entity {
   @property({

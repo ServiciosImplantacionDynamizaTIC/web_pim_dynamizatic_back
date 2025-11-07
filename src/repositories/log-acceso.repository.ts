@@ -1,6 +1,6 @@
 import {inject} from '@loopback/core';
 import {DefaultCrudRepository} from '@loopback/repository';
-import {BbddmysqlDataSource} from '../datasources';
+import {ApiBackendDataSource} from '../datasources';
 import {LogAcceso, LogAccesoRelations} from '../models';
 
 export class LogAccesoRepository extends DefaultCrudRepository<
@@ -9,7 +9,7 @@ export class LogAccesoRepository extends DefaultCrudRepository<
   LogAccesoRelations
 > {
   constructor(
-    @inject('datasources.Bbddmysql') dataSource: BbddmysqlDataSource,
+    @inject('datasources.ApiBackend') dataSource: ApiBackendDataSource,
   ) {
     super(LogAcceso, dataSource);
   }

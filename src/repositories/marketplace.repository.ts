@@ -1,6 +1,6 @@
 import {inject} from '@loopback/core';
 import {DefaultCrudRepository} from '@loopback/repository';
-import {BbddmysqlDataSource} from '../datasources';
+import {ApiBackendDataSource} from '../datasources';
 import {Marketplace, MarketplaceRelations} from '../models/marketplace.model';
 
 export class MarketplaceRepository extends DefaultCrudRepository<
@@ -9,7 +9,7 @@ export class MarketplaceRepository extends DefaultCrudRepository<
   MarketplaceRelations
 > {
   constructor(
-    @inject('datasources.Bbddmysql') dataSource: BbddmysqlDataSource,
+    @inject('datasources.ApiBackend') dataSource: ApiBackendDataSource,
   ) {
     super(Marketplace, dataSource);
   }

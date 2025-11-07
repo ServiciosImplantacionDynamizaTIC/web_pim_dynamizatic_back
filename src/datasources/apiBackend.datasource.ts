@@ -64,13 +64,13 @@ if(process.env.ENTORNO == "PRO"){
 // gracefully. The `stop()` method is inherited from `juggler.DataSource`.
 // Learn more at https://loopback.io/doc/en/lb4/Life-cycle.html
 @lifeCycleObserver('datasource')
-export class BbddmysqlDataSource extends juggler.DataSource
+export class ApiBackendDataSource extends juggler.DataSource
   implements LifeCycleObserver {
-  static dataSourceName = 'Bbddmysql';
+  static dataSourceName = 'ApiBackend';
   static readonly defaultConfig = config;
 
   constructor(
-    @inject('datasources.config.Bbddmysql', {optional: true})
+    @inject('datasources.config.ApiBackend', {optional: true})
     dsConfig: object = config,
   ) {
     super(dsConfig);

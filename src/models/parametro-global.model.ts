@@ -1,7 +1,7 @@
 import {Entity, model, property} from '@loopback/repository';
 
 @model({
-  settings: {idInjection: false, mysql: {schema: 'bbddmysql', table: 'parametro_global'}}
+  settings: {idInjection: false, mysql: {schema: 'pim_dynamizatic', table: 'parametro_global'}}
 })
 export class ParametroGlobal extends Entity {
   @property({

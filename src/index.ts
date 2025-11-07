@@ -1,10 +1,10 @@
 import * as fs from 'fs';
-import {ApplicationConfig, BbddmysqlBackApplication} from './application';
+import {ApplicationConfig, ApiBackendApplication} from './application';
 
 export * from './application';
 
 export async function main(options: ApplicationConfig = {}) {
-  const app = new BbddmysqlBackApplication(options);
+  const app = new ApiBackendApplication(options);
   await app.boot();
   await app.start();
 

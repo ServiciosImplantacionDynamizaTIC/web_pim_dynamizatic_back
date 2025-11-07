@@ -1,7 +1,7 @@
 import {Entity, model, property} from '@loopback/repository';
 
 @model({
-  settings: {idInjection: false, mysql: {schema: 'nathalie', table: 'plantilla_email'}}
+  settings: {idInjection: false, mysql: {schema: 'pim_dynamizatic', table: 'plantilla_email'}}
 })
 export class PlantillaEmail extends Entity {
   @property({

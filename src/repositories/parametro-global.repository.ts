@@ -1,6 +1,6 @@
 import {inject} from '@loopback/core';
 import {DefaultCrudRepository} from '@loopback/repository';
-import {BbddmysqlDataSource} from '../datasources';
+import {ApiBackendDataSource} from '../datasources';
 import {ParametroGlobal, ParametroGlobalRelations} from '../models/parametro-global.model';
 
 export class ParametroGlobalRepository extends DefaultCrudRepository<
@@ -9,7 +9,7 @@ export class ParametroGlobalRepository extends DefaultCrudRepository<
   ParametroGlobalRelations
 > {
   constructor(
-    @inject('datasources.Bbddmysql') dataSource: BbddmysqlDataSource,
+    @inject('datasources.ApiBackend') dataSource: ApiBackendDataSource,
   ) {
     super(ParametroGlobal, dataSource);
   }

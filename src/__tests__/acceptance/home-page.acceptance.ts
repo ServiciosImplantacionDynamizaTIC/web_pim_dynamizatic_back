@@ -1,9 +1,9 @@
 import {Client} from '@loopback/testlab';
-import {BbddmysqlBackApplication} from '../..';
+import {ApiBackendApplication} from '../..';
 import {setupApplication} from './test-helper';
 
 describe('HomePage', () => {
-  let app: BbddmysqlBackApplication;
+  let app: ApiBackendApplication;
   let client: Client;
 
   before('setupApplication', async () => {

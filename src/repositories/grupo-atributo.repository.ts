@@ -1,6 +1,6 @@
 import {inject} from '@loopback/core';
 import {DefaultCrudRepository} from '@loopback/repository';
-import {BbddmysqlDataSource} from '../datasources';
+import {ApiBackendDataSource} from '../datasources';
 import {GrupoAtributo, GrupoAtributoRelations} from '../models/grupo-atributo.model';
 
 export class GrupoAtributoRepository extends DefaultCrudRepository<
@@ -9,7 +9,7 @@ export class GrupoAtributoRepository extends DefaultCrudRepository<
   GrupoAtributoRelations
 > {
   constructor(
-    @inject('datasources.Bbddmysql') dataSource: BbddmysqlDataSource,
+    @inject('datasources.ApiBackend') dataSource: ApiBackendDataSource,
   ) {
     super(GrupoAtributo, dataSource);
   }

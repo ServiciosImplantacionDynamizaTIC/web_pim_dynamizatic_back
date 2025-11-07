@@ -1,6 +1,6 @@
 import {inject} from '@loopback/core';
 import {DefaultCrudRepository} from '@loopback/repository';
-import {BbddmysqlDataSource} from '../datasources';
+import {ApiBackendDataSource} from '../datasources';
 import {Empresa, EmpresaRelations} from '../models';
 
 export class EmpresaRepository extends DefaultCrudRepository<
@@ -9,7 +9,7 @@ export class EmpresaRepository extends DefaultCrudRepository<
   EmpresaRelations
 > {
   constructor(
-    @inject('datasources.Bbddmysql') dataSource: BbddmysqlDataSource,
+    @inject('datasources.ApiBackend') dataSource: ApiBackendDataSource,
   ) {
     super(Empresa, dataSource);
   }

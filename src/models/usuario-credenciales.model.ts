@@ -3,7 +3,7 @@ import {Entity, model, property} from '@loopback/repository';
 @model({
   settings: {
     idInjection: false,
-    mysql: {schema: 'bbddmysql', table: 'usuario_credenciales'}
+    mysql: {schema: 'pim_dynamizatic', table: 'usuario_credenciales'}
   }
 })
 export class UsuarioCredenciales extends Entity {

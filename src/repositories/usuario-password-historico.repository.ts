@@ -1,6 +1,6 @@
 import {inject} from '@loopback/core';
 import {DefaultCrudRepository} from '@loopback/repository';
-import {BbddmysqlDataSource} from '../datasources';
+import {ApiBackendDataSource} from '../datasources';
 import {UsuarioPasswordHistorico, UsuarioPasswordHistoricoRelations} from '../models';
 
 export class UsuarioPasswordHistoricoRepository extends DefaultCrudRepository<
@@ -9,7 +9,7 @@ export class UsuarioPasswordHistoricoRepository extends DefaultCrudRepository<
   UsuarioPasswordHistoricoRelations
 > {
   constructor(
-    @inject('datasources.Bbddmysql') dataSource: BbddmysqlDataSource,
+    @inject('datasources.ApiBackend') dataSource: ApiBackendDataSource,
   ) {
     super(UsuarioPasswordHistorico, dataSource);
   }

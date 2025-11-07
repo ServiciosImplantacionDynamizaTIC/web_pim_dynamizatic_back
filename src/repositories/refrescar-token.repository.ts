@@ -1,6 +1,6 @@
 import {inject} from '@loopback/core';
 import {DefaultCrudRepository} from '@loopback/repository';
-import {BbddmysqlDataSource} from '../datasources';
+import {ApiBackendDataSource} from '../datasources';
 import {RefrescarToken, RefrescarTokenRelations} from '../models';
 
 export class RefrescarTokenRepository extends DefaultCrudRepository<
@@ -9,7 +9,7 @@ export class RefrescarTokenRepository extends DefaultCrudRepository<
   RefrescarTokenRelations
 > {
   constructor(
-    @inject('datasources.Bbddmysql') dataSource: BbddmysqlDataSource,
+    @inject('datasources.ApiBackend') dataSource: ApiBackendDataSource,
   ) {
     super(RefrescarToken, dataSource);
   }

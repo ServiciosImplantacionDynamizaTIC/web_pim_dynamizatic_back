@@ -1,7 +1,7 @@
 {
-  "name": "Bbddmysql_back",
+  "name": "api-backend",
   "version": "0.0.1",
-  "description": "Proyecto API encargado de ser la parte Backend de la aplicación web Bbddmysql",
+  "description": "Proyecto API encargado de ser la parte Backend de la aplicación WEB",
   "keywords": [
     "loopback-application",
     "loopback"

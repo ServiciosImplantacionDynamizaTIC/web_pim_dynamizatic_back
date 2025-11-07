@@ -1,6 +1,6 @@
 import {inject, Getter} from '@loopback/core';
 import {DefaultCrudRepository, repository, HasOneRepositoryFactory} from '@loopback/repository';
-import {BbddmysqlDataSource} from '../datasources';
+import {ApiBackendDataSource} from '../datasources';
 import {Usuario, UsuarioCredenciales, UsuarioRelations} from '../models';
 import { UsuarioCredencialesRepository } from './usuario-credenciales.repository';
 
@@ -24,7 +24,7 @@ export class UsuarioRepository extends DefaultCrudRepository<
   public readonly userCredentials: HasOneRepositoryFactory<UsuarioCredenciales, typeof Usuario.prototype.id>;
 
   constructor(
-    @inject('datasources.Bbddmysql') dataSource: BbddmysqlDataSource,
+    @inject('datasources.ApiBackend') dataSource: ApiBackendDataSource,
     @repository.getter('UsuarioCredencialesRepository') protected userCredentialsRepositoryGetter: Getter<UsuarioCredencialesRepository>,
   ) {
     super(Usuario, dataSource);

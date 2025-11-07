@@ -1,6 +1,6 @@
 import {inject} from '@loopback/core';
 import {DefaultCrudRepository} from '@loopback/repository';
-import {BbddmysqlDataSource} from '../datasources';
+import {ApiBackendDataSource} from '../datasources';
 import {Auditoria, AuditoriaRelations} from '../models/auditoria.model';
 
 export class AuditoriaRepository extends DefaultCrudRepository<
@@ -9,7 +9,7 @@ export class AuditoriaRepository extends DefaultCrudRepository<
   AuditoriaRelations
 > {
   constructor(
-    @inject('datasources.Bbddmysql') dataSource: BbddmysqlDataSource,
+    @inject('datasources.ApiBackend') dataSource: ApiBackendDataSource,
   ) {
     super(Auditoria, dataSource);
   }

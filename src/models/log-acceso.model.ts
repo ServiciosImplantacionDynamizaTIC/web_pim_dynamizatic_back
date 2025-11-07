@@ -1,7 +1,7 @@
 import {Entity, model, property} from '@loopback/repository';
 
 @model({
-  settings: {idInjection: false, mysql: {schema: 'bbddmysql', table: 'log_acceso'}}
+  settings: {idInjection: false, mysql: {schema: 'pim_dynamizatic', table: 'log_acceso'}}
 })
 export class LogAcceso extends Entity {
   @property({

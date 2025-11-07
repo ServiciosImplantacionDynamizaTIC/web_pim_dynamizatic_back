@@ -1,6 +1,6 @@
 import {inject} from '@loopback/core';
 import {DefaultCrudRepository} from '@loopback/repository';
-import {BbddmysqlDataSource} from '../datasources';
+import {ApiBackendDataSource} from '../datasources';
 import {CategoriaGrupoAtributo, CategoriaGrupoAtributoRelations} from '../models/categoria-grupo-atributo.model';
 
 export class CategoriaGrupoAtributoRepository extends DefaultCrudRepository<
@@ -9,7 +9,7 @@ export class CategoriaGrupoAtributoRepository extends DefaultCrudRepository<
   CategoriaGrupoAtributoRelations
 > {
   constructor(
-    @inject('datasources.Bbddmysql') dataSource: BbddmysqlDataSource,
+    @inject('datasources.ApiBackend') dataSource: ApiBackendDataSource,
   ) {
     super(CategoriaGrupoAtributo, dataSource);
   }

@@ -1,4 +1,4 @@
-# Bbddmysql_back
+# Api-Backend
 
 Este es un proyecto de [LoopBack 4 CLI](https://loopback.io/doc/en/lb4/Command-line-interface.html) con el
 [initial project layout](https://loopback.io/doc/en/lb4/Loopback-application-layout.html).
@@ -8,7 +8,7 @@ Este es un proyecto de [LoopBack 4 CLI](https://loopback.io/doc/en/lb4/Command-l
 - [@AgustinJareño](https://www.linkedin.com/in/agustin-jare%C3%B1o-b1581052/)
 
 
-# Proyecto Backend API Bbddmysql
+# Proyecto Backend API ApiBackend
 
 A continuación se describe todo lo necesario para este proyecto API.
 
@@ -73,16 +73,16 @@ npm run lint:fix
 - `npm run migrate`: Migrar esquemas de bases de datos para modelos
 - `npm run openapi-spec`: Generar especificaciones OpenAPI en un archivo
 
-## EJEMPLO (Bbddmysql) -> CREAR BACKEND API - NODEJS - LOOPBACK 4
+## EJEMPLO (ApiBackend) -> CREAR BACKEND API - NODEJS - LOOPBACK 4
 
 - Importar el modelo de la base de datos en Workbench
 - Versión de NodeJs instalada: 20.13.1
 - Instalar loopback 4: npm install -g @loopback/cli
-- Crear carpeta del proyecto: mkdir Bbddmysql
-- Crear proyecto (Bbddmysql): lb4
+- Crear carpeta del proyecto: mkdir ApiBackend
+- Crear proyecto (ApiBackend): lb4
 - Crear Datasource: lb4 datasource
 - Compilar el proyecto: npm run build
-- Crear los modelos (Descubrir las tablas de la BD): lb4 discover --schema Bbddmysql 
+- Crear los modelos (Descubrir las tablas de la BD): lb4 discover --schema ApiBackend 
           * https://loopback.io/doc/en/lb4/Discovering-models.html#overview
 - Crear los repositorios: lb4 repository
 - Crear los controladores (uno a uno): lb4 controller

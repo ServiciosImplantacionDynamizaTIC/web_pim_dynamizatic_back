@@ -1,6 +1,6 @@
 import {Entity, model, property} from '@loopback/repository';
 
-@model({settings: {idInjection: false, mysql: {schema: 'bbddmysql', table: 'seccion'}}})
+@model({settings: {idInjection: false, mysql: {schema: 'pim_dynamizatic', table: 'seccion'}}})
 export class Seccion extends Entity {
   @property({
     type: 'number',

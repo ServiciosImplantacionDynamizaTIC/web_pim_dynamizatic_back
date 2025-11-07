@@ -1,6 +1,6 @@
 import {inject} from '@loopback/core';
 import {DefaultCrudRepository} from '@loopback/repository';
-import {BbddmysqlDataSource} from '../datasources';
+import {ApiBackendDataSource} from '../datasources';
 import {Permiso, PermisoRelations} from '../models';
 
 export class PermisoRepository extends DefaultCrudRepository<
@@ -9,7 +9,7 @@ export class PermisoRepository extends DefaultCrudRepository<
   PermisoRelations
 > {
   constructor(
-    @inject('datasources.Bbddmysql') dataSource: BbddmysqlDataSource,
+    @inject('datasources.ApiBackend') dataSource: ApiBackendDataSource,
   ) {
     super(Permiso, dataSource);
   }

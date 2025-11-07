@@ -26,7 +26,7 @@ import { CompruebaImagenController } from './controllers/compruebaImagen.control
 
 export {ApplicationConfig};
 
-export class BbddmysqlBackApplication extends BootMixin(
+export class ApiBackendApplication extends BootMixin(
   ServiceMixin(RepositoryMixin(RestApplication)),
 ) {
   constructor(options: ApplicationConfig = {}) {
@@ -97,7 +97,7 @@ export class BbddmysqlBackApplication extends BootMixin(
     this.api({
       openapi: '3.0.0',
       info: {
-        title: 'Bbddmysql application',
+        title: 'ApiBackend application',
         version: '1.0.0',
       },
       paths: {},

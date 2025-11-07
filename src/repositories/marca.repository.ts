@@ -1,6 +1,6 @@
 import {inject} from '@loopback/core';
 import {DefaultCrudRepository} from '@loopback/repository';
-import {BbddmysqlDataSource} from '../datasources';
+import {ApiBackendDataSource} from '../datasources';
 import {Marca, MarcaRelations} from '../models/marca.model';
 
 export class MarcaRepository extends DefaultCrudRepository<
@@ -9,7 +9,7 @@ export class MarcaRepository extends DefaultCrudRepository<
   MarcaRelations
 > {
   constructor(
-    @inject('datasources.Bbddmysql') dataSource: BbddmysqlDataSource,
+    @inject('datasources.ApiBackend') dataSource: ApiBackendDataSource,
   ) {
     super(Marca, dataSource);
   }

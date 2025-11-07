@@ -1,6 +1,6 @@
 import {inject} from '@loopback/core';
 import {DefaultCrudRepository} from '@loopback/repository';
-import {BbddmysqlDataSource} from '../datasources';
+import {ApiBackendDataSource} from '../datasources';
 import {TraduccionLiteral, TraduccionLiteralRelations} from '../models/traduccion-literal.model';
 
 export class TraduccionLiteralRepository extends DefaultCrudRepository<
@@ -9,7 +9,7 @@ export class TraduccionLiteralRepository extends DefaultCrudRepository<
   TraduccionLiteralRelations
 > {
   constructor(
-    @inject('datasources.Bbddmysql') dataSource: BbddmysqlDataSource,
+    @inject('datasources.ApiBackend') dataSource: ApiBackendDataSource,
   ) {
     super(TraduccionLiteral, dataSource);
   }

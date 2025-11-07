@@ -1,6 +1,6 @@
 import {inject} from '@loopback/core';
 import {DefaultCrudRepository} from '@loopback/repository';
-import {BbddmysqlDataSource} from '../datasources';
+import {ApiBackendDataSource} from '../datasources';
 import {Tarea, TareaRelations} from '../models/tarea.model';
 
 export class TareaRepository extends DefaultCrudRepository<
@@ -9,7 +9,7 @@ export class TareaRepository extends DefaultCrudRepository<
   TareaRelations
 > {
   constructor(
-    @inject('datasources.Bbddmysql') dataSource: BbddmysqlDataSource,
+    @inject('datasources.ApiBackend') dataSource: ApiBackendDataSource,
   ) {
     super(Tarea, dataSource);
   }

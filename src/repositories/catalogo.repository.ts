@@ -1,6 +1,6 @@
 import {inject} from '@loopback/core';
 import {DefaultCrudRepository} from '@loopback/repository';
-import {BbddmysqlDataSource} from '../datasources';
+import {ApiBackendDataSource} from '../datasources';
 import {Catalogo, CatalogoRelations} from '../models/catalogo.model';
 
 export class CatalogoRepository extends DefaultCrudRepository<
@@ -9,7 +9,7 @@ export class CatalogoRepository extends DefaultCrudRepository<
   CatalogoRelations
 > {
   constructor(
-    @inject('datasources.Bbddmysql') dataSource: BbddmysqlDataSource,
+    @inject('datasources.ApiBackend') dataSource: ApiBackendDataSource,
   ) {
     super(Catalogo, dataSource);
   }

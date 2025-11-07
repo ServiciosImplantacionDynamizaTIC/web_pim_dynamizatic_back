@@ -3,7 +3,7 @@ import {Entity, model, property} from '@loopback/repository';
 @model({
   settings: {
     idInjection: false,
-    mysql: {schema: 'bbddmysql', table: 'calendarios_disponibilidad'}
+    mysql: {schema: 'pim_dynamizatic', table: 'calendarios_disponibilidad'}
   }
 })
 export class CalendariosDisponibilidad extends Entity {

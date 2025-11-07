@@ -1,6 +1,6 @@
 import {inject} from '@loopback/core';
 import {DefaultCrudRepository} from '@loopback/repository';
-import {BbddmysqlDataSource} from '../datasources';
+import {ApiBackendDataSource} from '../datasources';
 import {MensajeTipo, MensajeTipoRelations} from '../models';
 
 export class MensajeTipoRepository extends DefaultCrudRepository<
@@ -9,7 +9,7 @@ export class MensajeTipoRepository extends DefaultCrudRepository<
   MensajeTipoRelations
 > {
   constructor(
-    @inject('datasources.Bbddmysql') dataSource: BbddmysqlDataSource,
+    @inject('datasources.ApiBackend') dataSource: ApiBackendDataSource,
   ) {
     super(MensajeTipo, dataSource);
   }
