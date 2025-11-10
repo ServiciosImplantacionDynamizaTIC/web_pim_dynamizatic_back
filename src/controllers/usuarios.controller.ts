@@ -394,11 +394,11 @@ export class UsuariosController {
         const dataSourcePlantillaEmail = this.plantillaEmailRepository.dataSource;
         query = `SELECT * FROM plantilla_email WHERE nombrePlantilla="${nombrePlantilla}";`;
         const plantillaRegistro = await dataSourcePlantillaEmail.execute(query);
-        let htmlContent = plantillaRegistro[0]['cuerpo'];
+        let htmlContent = plantillaRegistro[0]['cuerpo'] ? plantillaRegistro[0]['cuerpo'].toString('utf8') : '';
 
         //Obtengo la empresa
         const dataSourceEmpresa = this.empresaRepository.dataSource;
-        query = `SELECT * FROM empresa WHERE id=${plantillaRegistro[0]['empresa_id']};`;
+        query = `SELECT * FROM empresa WHERE id=${plantillaRegistro[0]['empresaId']};`;
         const empresaRegistro = await dataSourceEmpresa.execute(query);
 
         // Preparo la configuración para enviar el correo
