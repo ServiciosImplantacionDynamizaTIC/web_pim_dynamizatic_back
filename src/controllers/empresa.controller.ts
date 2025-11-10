@@ -93,7 +93,7 @@ export class EmpresaController {
     // Recuperamos los registros y llamamos a la función procesaRegistrosConImagenMiniatura que nos incluye las imagenMiniatura en la consulta
     //
     const dataSource = this.empresaRepository.dataSource;
-    const camposSelect = "id, codigo, nombre, descripcion, activoSn, tiempoInactividad"
+    const camposSelect = "*"
     return await SqlFilterUtil.ejecutarQuerySelect(dataSource, 'empresa', filter, camposSelect);
   }
 

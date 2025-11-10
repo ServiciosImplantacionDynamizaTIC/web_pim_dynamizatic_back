@@ -97,6 +97,69 @@ export class Empresa extends Entity {
   })
   tiempoInactividad: number;
 
+  @property({
+    type: 'boolean',
+    jsonSchema: {nullable: true},
+    generated: false,
+    mysql: {columnName: 'temaRipple', dataType: 'tinyint', dataLength: null, dataPrecision: null, dataScale: null, nullable: 'Y', generated: false, default: false},
+  })
+  temaRipple?: boolean;
+
+  @property({
+    type: 'string',
+    jsonSchema: {nullable: true},
+    length: 20,
+    generated: false,
+    mysql: {columnName: 'estiloInput', dataType: 'varchar', dataLength: 20, dataPrecision: null, dataScale: null, nullable: 'Y', generated: false, default: 'outlined'},
+  })
+  estiloInput?: string;
+
+  @property({
+    type: 'string',
+    jsonSchema: {nullable: true},
+    length: 20,
+    generated: false,
+    mysql: {columnName: 'modoMenu', dataType: 'varchar', dataLength: 20, dataPrecision: null, dataScale: null, nullable: 'Y', generated: false, default: 'static'},
+  })
+  modoMenu?: string;
+
+  @property({
+    type: 'string',
+    jsonSchema: {nullable: true},
+    length: 20,
+    generated: false,
+    mysql: {columnName: 'temaMenu', dataType: 'varchar', dataLength: 20, dataPrecision: null, dataScale: null, nullable: 'Y', generated: false, default: 'colorScheme'},
+  })
+  temaMenu?: string;
+
+  @property({
+    type: 'string',
+    jsonSchema: {nullable: true},
+    length: 10,
+    generated: false,
+    mysql: {columnName: 'esquemaColor', dataType: 'varchar', dataLength: 10, dataPrecision: null, dataScale: null, nullable: 'Y', generated: false, default: 'light'},
+  })
+  esquemaColor?: string;
+
+  @property({
+    type: 'string',
+    jsonSchema: {nullable: true},
+    length: 20,
+    generated: false,
+    mysql: {columnName: 'tema', dataType: 'varchar', dataLength: 20, dataPrecision: null, dataScale: null, nullable: 'Y', generated: false, default: 'mitema'},
+  })
+  tema?: string;
+
+  @property({
+    type: 'number',
+    jsonSchema: {nullable: true},
+    precision: 11,
+    scale: 0,
+    generated: false,
+    mysql: {columnName: 'escala', dataType: 'int', dataLength: null, dataPrecision: 11, dataScale: 0, nullable: 'Y', generated: false, default: 14},
+  })
+  escala?: number;
+
   // Define well-known properties here
 
   // Indexer property to allow additional data
