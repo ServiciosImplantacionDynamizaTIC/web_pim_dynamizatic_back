@@ -375,110 +375,115 @@ export class UsuariosController {
       let query = `SELECT * FROM usuario WHERE mail = '${email}'`;
       const registros = await dataSource.execute(query);
 
-      if (registros.length > 0) {
-        // Limpiamos los códigos de recuperacion anteriores de la BD\
-        query = `DELETE FROM usuario_restablecer_password WHERE email = '${email}'`;
-        await dataSource.execute(query);
-
-        // Guardamos el código de recuperación en la BD
-        await this.usuarioRestablecerPasswordRepository.create({
-          email,
-          usuarioId: registros[0].id,
-          codigoRecuperacion: codigoRecuperacion,
-          expiraEn: expiraEn.toISOString(),
-        });
-
-        const nombrePlantilla = 'RecuperarContraseña'; // Nombre de la plantilla de correo a utilizar
-
-        // Obtengo la plantilla del correo
-        const dataSourcePlantillaEmail = this.plantillaEmailRepository.dataSource;
-        query = `SELECT * FROM plantilla_email WHERE nombrePlantilla="${nombrePlantilla}";`;
-        const plantillaRegistro = await dataSourcePlantillaEmail.execute(query);
-        let htmlContent = plantillaRegistro[0]['cuerpo'] ? plantillaRegistro[0]['cuerpo'].toString('utf8') : '';
-
-        //Obtengo la empresa
-        const dataSourceEmpresa = this.empresaRepository.dataSource;
-        query = `SELECT * FROM empresa WHERE id=${plantillaRegistro[0]['empresaId']};`;
-        const empresaRegistro = await dataSourceEmpresa.execute(query);
-
-        // Preparo la configuración para enviar el correo
-        const transporter = nodemailer.createTransport({
-          host: empresaRegistro[0]['servicio'],// Servidor SMTP de Outlook
-          port: 587,                 // Puerto estándar para conexiones seguras con STARTTLS
-          secure: false,             // false para STARTTLS
-          requireTLS: true,
-          auth: {
-            user: empresaRegistro[0]['email'], // Dirección de correo de Outlook
-            pass: empresaRegistro[0]['password'], // Contraseña
-          },
-          tls: {
-            rejectUnauthorized: false
-          }
-        });
-
-        // Obtengo los archivos de la plantilla
-        const dataSourceArchivo = this.plantillaEmailRepository.dataSource;
-        query = `SELECT * FROM archivo WHERE idTabla=${plantillaRegistro[0]['id']};`;
-        const archivos = await dataSourceArchivo.execute(query);
-
-        // Incluyo las imágenes insertadas en la plantilla
-        const base64Images = htmlContent.match(/src="data:image\/[^;]+;base64[^"]+"/g) || [];
-        const attachments = base64Images.map((img: { match: (arg0: RegExp) => any[]; }, index: any) => {
-          const base64Data = img.match(/base64,([^"]+)/)[1];
-          const cid = `image${index}@nodemailer.com`;
-          htmlContent = htmlContent.replace(img, `src="cid:${cid}"`);
-          return {
-            filename: `image${index}.png`,
-            content: base64Data,
-            encoding: 'base64',
-            cid: cid
-          };
-        });
-
-        // Encapsula el string de htmlContent dentro de las etiquetas html <html> y <body> para que servicios de correo acepten el contenido
-        htmlContent = `<html><body>${htmlContent}</body></html>`;
-
-        // Reemplaza el marcador de posición {{codigoRecuperacion}} con el código de recuperación real
-        htmlContent = htmlContent.replace('{{codigoRecuperacion}}', codigoRecuperacion);
-
-        const publicPath = path.resolve(__dirname, '../../public');
-        // Incluyo los archivos adjuntados de la plantilla
-        for (let i = 0; i < archivos.length; i++) {
-          attachments.push({
-            filename: archivos[i]['url'].split('/').pop(),
-            path: path.join(publicPath, `/${archivos[i]['url']}`)
-          })
-        };
-
-        if (empresaRegistro[0]['email'] && empresaRegistro[0]['email'].length > 0 &&
-          empresaRegistro[0]['password'] && empresaRegistro[0]['password'].length) {
-          // Opciones del email
-          let parametrosMail = {
-            from: empresaRegistro[0]['email'],
-            to: email,
-            subject: plantillaRegistro[0]['titulo'],
-            html: htmlContent,
-            attachments: attachments
-          };
-
-          // Envio el correo
-          transporter.sendMail(parametrosMail, (error, info) => {
-            if (error) {
-              console.error('Error al enviar el email:', error);
-              // Aquí puedes implementar lógica para reintentos, notificaciones, etc.
-              return;
-            }
-          })
-
-          return { status: 'OK', message: 'Correo enviado con éxito.' };
-        }
-        else {
-          return { status: 'ERROR', message: 'No se pudo enviar el correo. Por favor, intenta nuevamente.' };
-        }
-
-      }
-      else {
+      if (registros.length === 0) {
         return { status: 'ERROR', message: 'No se encontró un usuario con el correo proporcionado.' };
+      }
+
+      // Limpiamos los códigos de recuperacion anteriores de la BD
+      query = `DELETE FROM usuario_restablecer_password WHERE email = '${email}'`;
+      await dataSource.execute(query);
+
+      // Guardamos el código de recuperación en la BD
+      await this.usuarioRestablecerPasswordRepository.create({
+        email,
+        usuarioId: registros[0].id,
+        codigoRecuperacion: codigoRecuperacion,
+        expiraEn: expiraEn.toISOString(),
+      });
+
+      const nombrePlantilla = 'RecuperarContraseña'; // Nombre de la plantilla de correo a utilizar
+
+      // Obtengo la plantilla del correo
+      const dataSourcePlantillaEmail = this.plantillaEmailRepository.dataSource;
+      query = `SELECT * FROM plantilla_email WHERE nombrePlantilla="${nombrePlantilla}";`;
+      const plantillaRegistro = await dataSourcePlantillaEmail.execute(query);
+
+      if (plantillaRegistro.length === 0) {
+        return { status: 'ERROR', message: 'No se encontró la plantilla de correo.' };
+      }
+
+      let htmlContent = plantillaRegistro[0]['cuerpo'] ? plantillaRegistro[0]['cuerpo'].toString('latin1') : '';
+
+      //Obtengo la empresa
+      const dataSourceEmpresa = this.empresaRepository.dataSource;
+      query = `SELECT * FROM empresa WHERE id=${plantillaRegistro[0]['empresaId']};`;
+      const empresaRegistro = await dataSourceEmpresa.execute(query);
+
+      if (empresaRegistro.length === 0) {
+        return { status: 'ERROR', message: 'No se encontró la configuración de la empresa.' };
+      }
+
+      // Verifico que existan las credenciales de correo
+      if (!empresaRegistro[0]['email'] || empresaRegistro[0]['email'].length === 0 ||
+        !empresaRegistro[0]['password'] || empresaRegistro[0]['password'].length === 0) {
+        return { status: 'ERROR', message: 'No se encontró configuración válida de correo.' };
+      }
+
+      // Preparo la configuración para enviar el correo
+      const transporter = nodemailer.createTransport({
+        host: empresaRegistro[0]['servicio'],// Servidor SMTP de Outlook
+        port: 587,                 // Puerto estándar para conexiones seguras con STARTTLS
+        secure: false,             // false para STARTTLS
+        requireTLS: true,
+        auth: {
+          user: empresaRegistro[0]['email'], // Dirección de correo de Outlook
+          pass: empresaRegistro[0]['password'], // Contraseña
+        },
+        tls: {
+          rejectUnauthorized: false
+        }
+      });
+
+      // Obtengo los archivos de la plantilla
+      const dataSourceArchivo = this.plantillaEmailRepository.dataSource;
+      query = `SELECT * FROM archivo WHERE idTabla=${plantillaRegistro[0]['id']};`;
+      const archivos = await dataSourceArchivo.execute(query);
+
+      // Incluyo las imágenes insertadas en la plantilla
+      const base64Images = htmlContent.match(/src="data:image\/[^;]+;base64[^"]+"/g) || [];
+      const attachments = base64Images.map((img: { match: (arg0: RegExp) => any[]; }, index: any) => {
+        const base64Data = img.match(/base64,([^"]+)/)[1];
+        const cid = `image${index}@nodemailer.com`;
+        htmlContent = htmlContent.replace(img, `src="cid:${cid}"`);
+        return {
+          filename: `image${index}.png`,
+          content: base64Data,
+          encoding: 'base64',
+          cid: cid
+        };
+      });
+
+      // Encapsula el string de htmlContent dentro de las etiquetas html <html> y <body> para que servicios de correo acepten el contenido
+      htmlContent = `<html><body>${htmlContent}</body></html>`;
+
+      // Reemplaza el marcador de posición {{codigoRecuperacion}} con el código de recuperación real
+      htmlContent = htmlContent.replace('{{codigoRecuperacion}}', codigoRecuperacion);
+
+      const publicPath = path.resolve(__dirname, '../../public');
+      // Incluyo los archivos adjuntados de la plantilla
+      for (let i = 0; i < archivos.length; i++) {
+        attachments.push({
+          filename: archivos[i]['url'].split('/').pop(),
+          path: path.join(publicPath, `/${archivos[i]['url']}`)
+        })
+      }
+
+      // Opciones del email
+      const parametrosMail = {
+        from: empresaRegistro[0]['email'],
+        to: 'acaicedo@dynamizatic.com', // Cambiar a: email
+        subject: plantillaRegistro[0]['titulo'],
+        html: htmlContent,
+        attachments: attachments
+      };
+
+      // Enviamos el email como promesa para que espere la respuesta, y responda si ha sido enviado correctamente o no.
+      try {
+        await transporter.sendMail(parametrosMail);
+        return { status: 'OK', message: 'Correo enviado con éxito.' };
+      } catch (emailError) {
+        console.error('Error al enviar el email:', emailError);
+        return { status: 'ERROR', message: 'No se pudo enviar el correo. Por favor, intenta nuevamente.' };
       }
 
     } catch (error) {
