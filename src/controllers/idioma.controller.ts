@@ -88,7 +88,7 @@ export class IdiomaController {
                     filtros += ` ${subKey} LIKE '%${subValue}%'`;
                   }
                   else {
-                    filtros += ` activo_sn LIKE '%${subValue}%'`;
+                    filtros += ` activoSn LIKE '%${subValue}%'`;
                   }
                 }
                 first = false
@@ -154,7 +154,7 @@ export class IdiomaController {
                     filtros += ` ${subKey} LIKE '%${subValue}%'`;
                   }
                   else {
-                    filtros += ` activo_sn LIKE '%${subValue}%'`;
+                    filtros += ` activoSn LIKE '%${subValue}%'`;
                   }
                 }
                 first = false
