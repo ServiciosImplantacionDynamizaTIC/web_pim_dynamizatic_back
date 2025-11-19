@@ -153,7 +153,7 @@ export class FileUploadController {
 
     const promiseUploadAndResize = new Promise<object>((resolve, reject) => {
       const upload = multer({ storage: storage }).single("file")
-      upload(request, respuesta, function (err) {
+      upload(request, respuesta, async function (err) {
         if (err instanceof multer.MulterError) {
           // A Multer error occurred when uploading.
           reject(err)
@@ -163,14 +163,22 @@ export class FileUploadController {
         }
         // Fue todo bien
         if (request.file?.mimetype.includes("image")) {
-          resolve(FileUploadController.tratarImagenes(`${rutaDeImagen}/${nombreFichero}`, `${extension}`, 1250, 850 ))
+          // Crear versión Web/Display (1250x850) para mostrar en detalle del producto
+          await FileUploadController.tratarImagenes(`${rutaDeImagen}/${nombreFichero}`, `${extension}`, 1250, 850);
+          // Crear Thumbnail (200x200) para listados y galerías
+          await FileUploadController.tratarImagenes(`${rutaDeImagen}/${nombreFichero}`, `${extension}`, 200, 200);
+          resolve({});
         }
       })
     })
 
     return promiseUploadAndResize.then(r => {
-      // Retornamos url de la orignal y de la resized que sera la que utilizaremos en la web
-      return { originalUrl: `${rutaDeImagenParaDevolver}${nombreFichero}`, resizedUrl: `${rutaDeImagenParaDevolver}1250x850_${nombreFichero}` }
+      // Retornamos las 3 URLs: original (completa), webUrl (display) y thumbnailUrl (miniatura)
+      return { 
+        originalUrl: `${rutaDeImagenParaDevolver}${nombreFichero}`,
+        webUrl: `${rutaDeImagenParaDevolver}1250x850_${nombreFichero}`,
+        thumbnailUrl: `${rutaDeImagenParaDevolver}200x200_${nombreFichero}`
+      }
     })
   }
 
@@ -279,8 +287,8 @@ export class FileUploadController {
         withoutEnlargement: true
       })
       .toFormat(formatMapping[extension], formatMapping[extension] === 'png'
-        ? { compressionLevel: 9 }  // Compresión máxima para PNG
-        : { quality: 80 }  // Calidad para JPEG y WebP
+        ? { compressionLevel: 9, quality: 75 }  // Compresión máxima para PNG
+        : { quality: 70, mozjpeg: true }  // Calidad optimizada para JPEG/WebP - pesa mucho menos
       )
       .toBuffer()
       .then(async function (outputBuffer) {
