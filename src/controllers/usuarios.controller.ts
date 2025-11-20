@@ -434,11 +434,11 @@ export class UsuariosController {
         }
       });
 
-      // Obtengo los archivos de la plantilla
+      // Obtengo Unicamente los archivos de la seccion de "Correo plantilla" relacionados con la plantilla de email "RecuperarContraseña"
       const dataSourceArchivo = this.plantillaEmailRepository.dataSource;
-      query = `SELECT * FROM archivo WHERE idTabla=${plantillaRegistro[0]['id']};`;
+      query = `SELECT a.* FROM archivo a INNER JOIN tipo_archivo ta ON a.tipoArchivoId = ta.id INNER JOIN seccion s ON ta.seccionId = s.id WHERE s.nombre = 'Correo plantilla' AND a.tabla = 'correo plantilla' AND a.idTabla = ${plantillaRegistro[0]['id']} AND a.empresaId = ${plantillaRegistro[0]['empresaId']};`;
       const archivos = await dataSourceArchivo.execute(query);
-
+      
       // Incluyo las imágenes insertadas en la plantilla
       const base64Images = htmlContent.match(/src="data:image\/[^;]+;base64[^"]+"/g) || [];
       const attachments = base64Images.map((img: { match: (arg0: RegExp) => any[]; }, index: any) => {
@@ -471,7 +471,7 @@ export class UsuariosController {
       // Opciones del email
       const parametrosMail = {
         from: empresaRegistro[0]['email'],
-        to: 'acaicedo@dynamizatic.com', // Cambiar a: email
+        to: email,
         subject: plantillaRegistro[0]['titulo'],
         html: htmlContent,
         attachments: attachments
