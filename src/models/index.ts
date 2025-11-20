@@ -18,3 +18,5 @@ export * from './tipo-archivo.model';
 export * from './empresa.model';
 export * from './plantilla-email.model';
 export * from './log-acceso.model';
+export * from './log-accion.model';
+export * from './configuracion-limpieza-logs.model';
