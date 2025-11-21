@@ -163,7 +163,11 @@ export class RolController {
     content: { 'application/json': { schema: { type: 'object' } } },
   })
   async vistaEmpresaRol(@param.filter(Rol) filter?: Filter<Object>,): Promise<Object[]> {
-    return SqlFilterUtil.ejecutarQuerySelect( this.rolRepository.dataSource, 'vista_empresa_rol', filter );
+    return SqlFilterUtil.ejecutarQuerySelect( 
+      this.rolRepository.dataSource, 
+      'vista_empresa_rol', 
+      filter 
+    );
   }
 
   @get('/vistaEmpresaRolCount')
@@ -172,7 +176,11 @@ export class RolController {
     content: { 'application/json': { schema: { type: 'object' } } },
   })
   async vistaEmpresaRolCount(@param.where(Rol) where?: Where<Rol>,): Promise<Rol[]> {
-    return SqlFilterUtil.ejecutarQueryCount( this.rolRepository.dataSource, 'vista_empresa_rol', where );
+    return SqlFilterUtil.ejecutarQueryCount( 
+      this.rolRepository.dataSource, 
+      'vista_empresa_rol', 
+      where 
+    );
   }
 
   @get('/buscarIdRol')

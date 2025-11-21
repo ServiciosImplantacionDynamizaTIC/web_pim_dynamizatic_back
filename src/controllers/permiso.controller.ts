@@ -168,7 +168,11 @@ export class PermisoController {
   async vistaEmpresaRolPermiso(
     @param.filter(Permiso) filter?: Filter<Permiso>,
   ): Promise<Permiso[]> {
-    return SqlFilterUtil.ejecutarQuerySelect( this.permisoRepository.dataSource, 'vista_empresa_rol_permiso', filter );
+    return SqlFilterUtil.ejecutarQuerySelect( 
+      this.permisoRepository.dataSource, 
+      'vista_empresa_rol_permiso', 
+      filter 
+    );
   }
 
   @get('/buscarPermiso')
