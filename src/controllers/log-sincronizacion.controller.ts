@@ -19,6 +19,7 @@ import {
 } from '@loopback/rest';
 import {LogSincronizacion} from '../models/log-sincronizacion.model';
 import {LogSincronizacionRepository} from '../repositories';
+import { SqlFilterUtil } from '../utils/sql-filter.util';
 
 export class LogSincronizacionController {
   constructor(
@@ -55,7 +56,8 @@ export class LogSincronizacionController {
   async count(
     @param.where(LogSincronizacion) where?: Where<LogSincronizacion>,
   ): Promise<Count> {
-    return this.logSincronizacionRepository.count(where);
+    const dataSource = this.logSincronizacionRepository.dataSource;
+    return await SqlFilterUtil.ejecutarQueryCount(dataSource, 'log_sincronizacion', where);
   }
 
   @get('/log-sincronizacions')
@@ -73,7 +75,9 @@ export class LogSincronizacionController {
   async find(
     @param.filter(LogSincronizacion) filter?: Filter<LogSincronizacion>,
   ): Promise<LogSincronizacion[]> {
-    return this.logSincronizacionRepository.find(filter);
+    const dataSource = this.logSincronizacionRepository.dataSource;
+    const camposSelect = "*";
+    return await SqlFilterUtil.ejecutarQuerySelect(dataSource, 'log_sincronizacion', filter, camposSelect);
   }
 
   @patch('/log-sincronizacions')
