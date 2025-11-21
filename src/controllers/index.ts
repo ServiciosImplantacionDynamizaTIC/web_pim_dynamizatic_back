@@ -44,3 +44,5 @@ export * from './log-acceso.controller';
 export * from './log-exportacion.controller';
 export * from './log-importacion.controller';
 export * from './log-sincronizacion.controller';
+export * from './limpia-log.controller';
+export * from './log-accion.controller';
