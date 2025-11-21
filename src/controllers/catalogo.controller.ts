@@ -19,6 +19,7 @@ import {
 } from '@loopback/rest';
 import {Catalogo} from '../models/catalogo.model';
 import {CatalogoRepository} from '../repositories';
+import { SqlFilterUtil } from '../utils/sql-filter.util';
 
 export class CatalogoController {
   constructor(
@@ -55,49 +56,11 @@ export class CatalogoController {
   async count(
     @param.where(Catalogo) where?: Where<Catalogo>,
   ): Promise<Count> {
-    const dataSource = this.catalogoRepository.dataSource;
-    //Aplicamos filtros
-    let filtros = '';
-    //Obtiene los filtros
-    filtros += ` WHERE 1=1`
-    if (where) {
-      for (const [key] of Object.entries(where)) {
-        if (key === 'and' || key === 'or') {
-          {
-            let first = true
-            for (const [subKey, subValue] of Object.entries((where as any)[key])) {
-              if (subValue !== '' && subValue != null) {
-                if (!first) {
-                  if (key === 'and') {
-                    filtros += ` AND`;
-                  }
-                  else {
-                    filtros += ` OR`;
-                  }
-                }
-                else {
-                  filtros += ' AND ('
-                }
-                if (/^-?\d+(\.\d+)?$/.test(subValue as string)) {
-                  filtros += ` ${subKey} = ${subValue}`;
-                }
-                else {
-                  filtros += ` ${subKey} LIKE '%${subValue}%'`;
-                }
-                first = false
-              }
-            }
-            if (!first) {
-              filtros += `)`;
-            }
-          }
-        }
-
-      }
-    }
-    const query = `SELECT COUNT(*) AS count FROM catalogo${filtros}`;
-    const registros = await dataSource.execute(query, []);
-    return registros[0];
+    return SqlFilterUtil.ejecutarQueryCount(
+      this.catalogoRepository.dataSource,
+      'catalogo',
+      where
+    );
   }
 
   @get('/catalogos')
@@ -115,7 +78,11 @@ export class CatalogoController {
   async find(
     @param.filter(Catalogo) filter?: Filter<Catalogo>,
   ): Promise<Catalogo[]> {
-    return this.catalogoRepository.find(filter);
+    return SqlFilterUtil.ejecutarQuerySelect(
+      this.catalogoRepository.dataSource,
+      'catalogo',
+      filter
+    );
   }
 
   @patch('/catalogos')

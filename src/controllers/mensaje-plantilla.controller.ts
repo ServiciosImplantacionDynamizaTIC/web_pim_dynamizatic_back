@@ -20,6 +20,7 @@ import {
 } from '@loopback/rest';
 import {MensajePlantilla} from '../models';
 import {MensajePlantillaRepository} from '../repositories';
+import { SqlFilterUtil } from '../utils/sql-filter.util';
 
 export class MensajePlantillaController {
   constructor(
@@ -56,32 +57,11 @@ export class MensajePlantillaController {
   async count(
     @param.where(MensajePlantilla) where?: Where<MensajePlantilla>,
   ): Promise<Count> {
-    const dataSource = this.mensajePlantillaRepository.dataSource;
-    //Aplicamos filtros
-    let filtros = '';
-      filtros += ` WHERE 1=1`
-      //Obtiene los filtros
-      if (where) {
-        let first = true
-        for (const [key, value] of Object.entries(where)) {
-          if (value !== null) {
-            if (!first) {
-              filtros += ` OR`;
-            }
-            else {
-              filtros += ' AND ('
-            }
-            filtros += ` ${key} LIKE '%${value}%'`;
-            first = false
-          }
-        }
-        if (!first) {
-          filtros += `)`;
-        }
-      }
-      const query = `SELECT COUNT(*) AS count FROM mensaje_plantilla${filtros}`;
-      const registros = await dataSource.execute(query, []);
-      return registros[0];
+    return SqlFilterUtil.ejecutarQueryCount(
+      this.mensajePlantillaRepository.dataSource,
+      'mensaje_plantilla',
+      where
+    );
   }
 
   @get('/mensaje-plantillas')
@@ -99,49 +79,12 @@ export class MensajePlantillaController {
   async find(
     @param.filter(MensajePlantilla) filter?: Filter<MensajePlantilla>,
   ): Promise<MensajePlantilla[]> {
-    const dataSource = this.mensajePlantillaRepository.dataSource;
-    //Aplicamos filtros
-    let filtros = '';
-    //Obtiene los filtros
-    let first = true
-    filtros += ` WHERE 1=1`
-    if (filter?.where) {
-      for (const [key, value] of Object.entries(filter.where)) {
-        if (value !== '' && value !== null) {
-          if (!first) {
-            filtros += ` OR`;
-          }
-          else {
-            filtros += ' AND ('
-          }
-          if(key === 'empresaId'){
-            filtros += ` empresa_id = '${value}'`;
-          }
-          else{
-            filtros += ` ${key} LIKE '%${value}%'`;
-          }
-          
-          first = false
-        }
-      }
-      if (!first) {
-        filtros += `)`;
-      }
-    }
-    // Agregar ordenamiento
-    if (filter?.order) {
-      filtros += ` ORDER BY ${filter.order}`;
-    }
-    // Agregar paginación
-    if (filter?.limit) {
-      filtros += ` LIMIT ${filter?.limit}`;
-    }
-    if (filter?.offset) {
-      filtros += ` OFFSET ${filter?.offset}`;
-    }
-    const query = `SELECT id,nombre, mensaje_plantilla_categoria_id AS mensajePlantillaCategoriaId, empresa_id AS empresaId, idioma_id AS idiomaId, texto_cuerpo AS textoCuerpo FROM mensaje_plantilla${filtros}`;
-    const registros = await dataSource.execute(query);
-    return registros;
+    return SqlFilterUtil.ejecutarQuerySelect(
+      this.mensajePlantillaRepository.dataSource,
+      'mensaje_plantilla',
+      filter,
+      'id,nombre, mensaje_plantilla_categoria_id AS mensajePlantillaCategoriaId, empresa_id AS empresaId, idioma_id AS idiomaId, texto_cuerpo AS textoCuerpo'
+    );
   }
 
   @patch('/mensaje-plantillas')

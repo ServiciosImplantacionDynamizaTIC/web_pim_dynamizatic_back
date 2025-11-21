@@ -19,6 +19,7 @@ import {
 } from '@loopback/rest';
 import {LogAcceso} from '../models';
 import {LogAccesoRepository} from '../repositories';
+import { SqlFilterUtil } from '../utils/sql-filter.util';
 
 export class LogAccesoController {
   constructor(
@@ -55,49 +56,11 @@ export class LogAccesoController {
   async count(
     @param.where(LogAcceso) where?: Where<LogAcceso>,
   ): Promise<Count> {
-    const dataSource = this.logAccesoRepository.dataSource;
-    //Aplicamos filtros
-    let filtros = '';
-    //Obtiene los filtros
-    filtros += ` WHERE 1=1`
-    if (where) {
-      for (const [key] of Object.entries(where)) {
-        if (key === 'and' || key === 'or') {
-          {
-            let first = true
-            for (const [subKey, subValue] of Object.entries((where as any)[key])) {
-              if (subValue !== '' && subValue != null) {
-                if (!first) {
-                  if (key === 'and') {
-                    filtros += ` AND`;
-                  }
-                  else {
-                    filtros += ` OR`;
-                  }
-                }
-                else {
-                  filtros += ' AND ('
-                }
-                if (/^-?\d+(\.\d+)?$/.test(subValue as string)) {
-                  filtros += ` ${subKey} = ${subValue}`;
-                }
-                else {
-                  filtros += ` ${subKey} LIKE '%${subValue}%'`;
-                }
-                first = false
-              }
-            }
-            if (!first) {
-              filtros += `)`;
-            }
-          }
-        }
-
-      }
-    }
-    const query = `SELECT COUNT(*) AS count FROM vista_log_acceso_usuario${filtros}`;
-    const registros = await dataSource.execute(query, []);
-    return registros;
+    return SqlFilterUtil.ejecutarQueryCount(
+      this.logAccesoRepository.dataSource,
+      'vista_log_acceso_usuario',
+      where
+    );
   }
 
   @get('/log-accesos')
@@ -115,60 +78,11 @@ export class LogAccesoController {
   async find(
     @param.filter(LogAcceso) filter?: Filter<LogAcceso>,
   ): Promise<LogAcceso[]> {
-    const dataSource = this.logAccesoRepository.dataSource;
-    //Aplicamos filtros
-    let filtros = '';
-    //Obtiene los filtros
-    filtros += ` WHERE 1=1`
-    if (filter?.where) {
-      for (const [key] of Object.entries(filter?.where)) {
-        if (key === 'and' || key === 'or') {
-          {
-            let first = true
-            for (const [subKey, subValue] of Object.entries((filter?.where as any)[key])) {
-              if (subValue !== '' && subValue != null) {
-                if (!first) {
-                  if (key === 'and') {
-                    filtros += ` AND`;
-                  }
-                  else {
-                    filtros += ` OR`;
-                  }
-                }
-                else {
-                  filtros += ' AND ('
-                }
-                if (/^-?\d+(\.\d+)?$/.test(subValue as string)) {
-                  filtros += ` ${subKey} = ${subValue}`;
-                }
-                else {
-                  filtros += ` ${subKey} LIKE '%${subValue}%'`;
-                }
-                first = false
-              }
-            }
-            if (!first) {
-              filtros += `)`;
-            }
-          }
-        }
-
-      }
-    }
-    // Agregar ordenamiento
-    if (filter?.order) {
-      filtros += ` ORDER BY ${filter.order}`;
-    }
-    // Agregar paginación
-    if (filter?.limit) {
-      filtros += ` LIMIT ${filter?.limit}`;
-    }
-    if (filter?.offset) {
-      filtros += ` OFFSET ${filter?.offset}`;
-    }
-    const query = `SELECT * FROM vista_log_acceso_usuario${filtros}`;
-    const registros = await dataSource.execute(query);
-    return registros;
+    return SqlFilterUtil.ejecutarQuerySelect(
+      this.logAccesoRepository.dataSource,
+      'vista_log_acceso_usuario',
+      filter
+    );
   }
 
   @patch('/log-accesos')
