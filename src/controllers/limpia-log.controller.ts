@@ -42,11 +42,15 @@ export class LimpiaLogController {
 
   // Función reutilizable para enviar emails
   async enviarEmail(asunto: string, cuerpo: string, tabla: string, errores: string[], empresaId: number) {
-    let emails = ['acaicedo@dynamizatic.com', 'ajareno@dynamizatic.onmicrosoft.com'];
+    let emails = process.env.EMAILS_ADMINISTRADORES?.split(',') || [];
     
     try {
-      const parametroEmails = await this.parametroGlobalRepository.findOne({where: {clave: 'correosEnvioLimpiezaLog'}});
-      if (parametroEmails?.valor) emails = parametroEmails.valor.split(',').map(e => e.trim());
+      const parametroEmails = await this.parametroGlobalRepository.findOne({
+        where: {clave: 'correosEnvioLimpiezaLog', empresaId: empresaId}
+      });
+      if (parametroEmails?.valor) {
+        emails = parametroEmails.valor.split(',').map(e => e.trim());
+      }
     } catch {}
 
     const rutaArchivo = './errores_limpieza_nuevo_PIM_logs.txt';
@@ -60,10 +64,6 @@ export class LimpiaLogController {
       const fuenteDatosEmpresa = this.empresaRepository.dataSource;
       const query = `SELECT * FROM empresa WHERE id = ${empresaId} LIMIT 1;`;
       const empresaRegistro = await fuenteDatosEmpresa.execute(query);
-      
-      if (!empresaRegistro || empresaRegistro.length === 0) {
-        throw new Error(`No se encontró la empresa con ID ${empresaId} para envío de correo`);
-      }
 
       // Preparo la configuración para enviar el correo
       const transporter = nodemailer.createTransport({
@@ -237,12 +237,10 @@ export class LimpiaLogController {
         where: {activo: 'S', empresaId: empresaIdFiltro},
       });
     } else {
-      // Obtener todas las configuraciones con activo = 'S' y empresaId válido
+      // Obtener todas las configuraciones con activo = 'S'
       configuraciones = await this.configuracionLimpiezaLogsRepository.find({
         where: {activo: 'S'},
       });
-      // Filtrar solo las que tienen empresaId definido
-      configuraciones = configuraciones.filter(config => config.empresaId != null);
     }
 
     if (!configuraciones || configuraciones.length === 0) {
@@ -250,7 +248,7 @@ export class LimpiaLogController {
     }
 
     const resultados = [];
-    const errores: string[] = [];
+    const erroresPorEmpresa: Map<number, string[]> = new Map();
 
     // Para cada configuración de limpieza: borrar los registros antiguos
     for (const config of configuraciones) {
@@ -279,8 +277,8 @@ export class LimpiaLogController {
         const registrosEliminados = resultado?.affectedRows || 0;
 
         // Actualiza fechas en la configuración
-        // Siempre actualiza fechaUltimaEjecucion
-        // Solo actualiza fechaUltimoBorrado si realmente se borraron registros
+        // - Siempre actualiza fechaUltimaEjecucion
+        // - Solo actualiza fechaUltimoBorrado si realmente se borraron registros
         const actualizacion: any = {
           fechaUltimaEjecucion: new Date().toISOString(),
         };
@@ -320,16 +318,29 @@ export class LimpiaLogController {
           ok: false,
         });
 
-        // Enviar email de error específico para esta empresa
-        const asuntoError = `Error en limpieza de logs - Empresa ${config.empresaId}`;
-        const cuerpoError = `Error al limpiar la tabla ${config.nombreTabla} de la empresa ${config.empresaId}.`;
-        const errorEspecifico = [`Empresa ${config.empresaId} - Error al limpiar tabla ${config.nombreTabla}: ${mensajeError}`];
-        
-        try {
-          await this.enviarEmail(asuntoError, cuerpoError, config.nombreTabla, errorEspecifico, config.empresaId);
-        } catch (emailError) {
-          console.error('Error al enviar email de notificación:', emailError);
+        // Agrupar errores por empresa
+        if (config.empresaId) {
+          if (!erroresPorEmpresa.has(config.empresaId)) {
+            erroresPorEmpresa.set(config.empresaId, []);
+          }
+          erroresPorEmpresa.get(config.empresaId)!.push(
+            `Error al limpiar tabla ${config.nombreTabla}: ${mensajeError}`
+          );
         }
+      }
+    }
+
+    // Enviar notificación de errores agrupada por empresa
+    for (const [empresaId, errores] of erroresPorEmpresa.entries()) {
+      const asunto = `Errores en limpieza de logs - Empresa ${empresaId}`;
+      const cuerpo = `Se encontraron ${errores.length} error(es) durante el proceso de limpieza de logs de la empresa ${empresaId}. En el archivo adjunto se detallan los errores.`;
+      try {
+        await this.registrarLog('LIMPIEZA_LOGS-KO', `Empresa ${empresaId}: ${errores.length} errores en limpieza automática`);
+      } catch {}
+      try {
+        await this.enviarEmail(asunto, cuerpo, 'LIMPIEZA_LOGS', errores, empresaId);
+      } catch (emailError) {
+        console.error(`Error al enviar email a empresa ${empresaId}:`, emailError);
       }
     }
 
@@ -349,8 +360,8 @@ export class LimpiaLogController {
   async limpiaLogManual() {
     try {
       // Obtener todas las empresas
-      const fuenteDatosEmpresa = this.empresaRepository.dataSource;
-      const empresas = await fuenteDatosEmpresa.execute(`SELECT id FROM empresa`);
+      const dataSourceEmpresa = this.empresaRepository.dataSource;
+      const empresas = await dataSourceEmpresa.execute(`SELECT id FROM empresa`);
       
       if (!empresas || empresas.length === 0) {
         return {
