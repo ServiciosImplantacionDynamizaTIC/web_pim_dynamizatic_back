@@ -234,12 +234,12 @@ export class LimpiaLogController {
     if (empresaIdFiltro) {
       // Obtener configuraciones solo de una empresa específica
       configuraciones = await this.configuracionLimpiezaLogsRepository.find({
-        where: {activo: 'S', empresaId: empresaIdFiltro},
+        where: {activoSn: 'S', empresaId: empresaIdFiltro},
       });
     } else {
-      // Obtener todas las configuraciones con activo = 'S' y empresaId válido
+      // Obtener todas las configuraciones con activoSn = 'S' y empresaId válido
       configuraciones = await this.configuracionLimpiezaLogsRepository.find({
-        where: {activo: 'S'},
+        where: {activoSn: 'S'},
       });
       // Filtrar solo las que tienen empresaId definido
       configuraciones = configuraciones.filter(config => config.empresaId != null);
