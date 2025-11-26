@@ -19,6 +19,7 @@ import {
 } from '@loopback/rest';
 import {Auditoria} from '../models/auditoria.model';
 import {AuditoriaRepository} from '../repositories';
+import { SqlFilterUtil } from '../utils/sql-filter.util';
 
 export class AuditoriaController {
   constructor(
@@ -55,49 +56,11 @@ export class AuditoriaController {
   async count(
     @param.where(Auditoria) where?: Where<Auditoria>,
   ): Promise<Count> {
-    const dataSource = this.auditoriaRepository.dataSource;
-    //Aplicamos filtros
-    let filtros = '';
-    //Obtiene los filtros
-    filtros += ` WHERE 1=1`
-    if (where) {
-      for (const [key] of Object.entries(where)) {
-        if (key === 'and' || key === 'or') {
-          {
-            let first = true
-            for (const [subKey, subValue] of Object.entries((where as any)[key])) {
-              if (subValue !== '' && subValue != null) {
-                if (!first) {
-                  if (key === 'and') {
-                    filtros += ` AND`;
-                  }
-                  else {
-                    filtros += ` OR`;
-                  }
-                }
-                else {
-                  filtros += ' AND ('
-                }
-                if (/^-?\d+(\.\d+)?$/.test(subValue as string)) {
-                  filtros += ` ${subKey} = ${subValue}`;
-                }
-                else {
-                  filtros += ` ${subKey} LIKE '%${subValue}%'`;
-                }
-                first = false
-              }
-            }
-            if (!first) {
-              filtros += `)`;
-            }
-          }
-        }
-
-      }
-    }
-    const query = `SELECT COUNT(*) AS count FROM auditoria${filtros}`;
-    const registros = await dataSource.execute(query, []);
-    return registros[0];
+    return SqlFilterUtil.ejecutarQueryCount(
+      this.auditoriaRepository.dataSource,
+      'auditoria',
+      where
+    );
   }
 
   @get('/auditorias')
@@ -115,7 +78,15 @@ export class AuditoriaController {
   async find(
     @param.filter(Auditoria) filter?: Filter<Auditoria>,
   ): Promise<Auditoria[]> {
-    return this.auditoriaRepository.find(filter);
+    //
+    // Recuperamos los registros y llamamos a la función procesaRegistrosConImagenMiniatura que nos incluye las imagenMiniatura en la consulta
+    //
+    return SqlFilterUtil.ejecutarQuerySelect(
+      this.auditoriaRepository.dataSource,
+      'auditoria',
+      filter,
+      '*'
+    );
   }
 
   @patch('/auditorias')

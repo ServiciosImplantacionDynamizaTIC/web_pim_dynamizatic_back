@@ -19,6 +19,7 @@ import {
 } from '@loopback/rest';
 import {Icono} from '../models/icono.model';
 import {IconoRepository} from '../repositories';
+import { SqlFilterUtil } from '../utils/sql-filter.util';
 
 export class IconoController {
   constructor(
@@ -55,49 +56,11 @@ export class IconoController {
   async count(
     @param.where(Icono) where?: Where<Icono>,
   ): Promise<Count> {
-    const dataSource = this.iconoRepository.dataSource;
-    //Aplicamos filtros
-    let filtros = '';
-    //Obtiene los filtros
-    filtros += ` WHERE 1=1`
-    if (where) {
-      for (const [key] of Object.entries(where)) {
-        if (key === 'and' || key === 'or') {
-          {
-            let first = true
-            for (const [subKey, subValue] of Object.entries((where as any)[key])) {
-              if (subValue !== '' && subValue != null) {
-                if (!first) {
-                  if (key === 'and') {
-                    filtros += ` AND`;
-                  }
-                  else {
-                    filtros += ` OR`;
-                  }
-                }
-                else {
-                  filtros += ' AND ('
-                }
-                if (/^-?\d+(\.\d+)?$/.test(subValue as string)) {
-                  filtros += ` ${subKey} = ${subValue}`;
-                }
-                else {
-                  filtros += ` ${subKey} LIKE '%${subValue}%'`;
-                }
-                first = false
-              }
-            }
-            if (!first) {
-              filtros += `)`;
-            }
-          }
-        }
-
-      }
-    }
-    const query = `SELECT COUNT(*) AS count FROM icono${filtros}`;
-    const registros = await dataSource.execute(query, []);
-    return registros[0];
+    return SqlFilterUtil.ejecutarQueryCount(
+      this.iconoRepository.dataSource,
+      'icono',
+      where
+    );
   }
 
   @get('/iconos')
@@ -115,7 +78,11 @@ export class IconoController {
   async find(
     @param.filter(Icono) filter?: Filter<Icono>,
   ): Promise<Icono[]> {
-    return this.iconoRepository.find(filter);
+    return SqlFilterUtil.ejecutarQuerySelect(
+      this.iconoRepository.dataSource,
+      'icono',
+      filter
+    );
   }
 
   @patch('/iconos')

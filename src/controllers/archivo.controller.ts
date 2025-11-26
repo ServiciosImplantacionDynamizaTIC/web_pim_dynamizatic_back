@@ -22,6 +22,7 @@ import { Archivo } from '../models';
 import { ArchivoRepository } from '../repositories';
 import { CompruebaImagenController } from './compruebaImagen.controller';
 import { inject } from '@loopback/core';
+import { SqlFilterUtil } from '../utils/sql-filter.util';
 
 export class ArchivoController {
   constructor(
@@ -59,7 +60,11 @@ export class ArchivoController {
   async count(
     @param.where(Archivo) where?: Where<Archivo>,
   ): Promise<Count> {
-    return this.archivoRepository.count(where);
+    return SqlFilterUtil.ejecutarQueryCount(
+      this.archivoRepository.dataSource,
+      'archivo',
+      where
+    );
   }
 
   @get('/archivos')
@@ -77,7 +82,15 @@ export class ArchivoController {
   async find(
     @param.filter(Archivo) filter?: Filter<Archivo>,
   ): Promise<Archivo[]> {
-    return this.archivoRepository.find(filter);
+    //
+    // Recuperamos los registros y llamamos a la función procesaRegistrosConImagenMiniatura que nos incluye las imagenMiniatura en la consulta
+    //
+    return SqlFilterUtil.ejecutarQuerySelect(
+      this.archivoRepository.dataSource,
+      'archivo',
+      filter,
+      '*'
+    );
   }
 
   @patch('/archivos')
@@ -167,65 +180,17 @@ export class ArchivoController {
     content: { 'application/json': { schema: { type: 'object' } } },
   })
   async vistaArchivoEmpresa(@param.filter(Archivo) filter?: Filter<Object>,): Promise<Object[]> {
-    const dataSource = this.archivoRepository.dataSource;
-    //Aplicamos filtros
-    let filtros = '';
-    //Obtiene los filtros
-    filtros += ` WHERE 1=1`
-    if (filter?.where) {
-      for (const [key] of Object.entries(filter?.where)) {
-        if (key === 'and' || key === 'or') {
-          {
-            let first = true
-            for (const [subKey, subValue] of Object.entries((filter?.where as any)[key])) {
-              if (subValue !== '' && subValue != null) {
-                if (!first) {
-                  if (key === 'and') {
-                    filtros += ` AND`;
-                  }
-                  else {
-                    filtros += ` OR`;
-                  }
-                }
-                else {
-                  filtros += ' AND ('
-                }
-                if (/^-?\d+(\.\d+)?$/.test(subValue as string)) {
-                  filtros += ` ${subKey} = ${subValue}`;
-                }
-                else {
-                  filtros += ` ${subKey} LIKE '%${subValue}%'`;
-                }
-                first = false
-              }
-            }
-            if (!first) {
-              filtros += `)`;
-            }
-          }
-        }
-
-      }
-    }
-    // Agregar ordenamiento
-    if (filter?.order) {
-      filtros += ` ORDER BY ${filter.order}`;
-    }
-    // Agregar paginación
-    if (filter?.limit) {
-      filtros += ` LIMIT ${filter?.limit}`;
-    }
-    if (filter?.offset) {
-      filtros += ` OFFSET ${filter?.offset}`;
-    }
-    const query = `SELECT * FROM vista_archivo_empresa${filtros}`;
-    const registros = await dataSource.execute(query);
+    const registros = await SqlFilterUtil.ejecutarQuerySelect(
+      this.archivoRepository.dataSource,
+      'vista_archivo_empresa',
+      filter,
+      '*'
+    );
     //Comprobamos que las imagenes existan
     for (const registro of registros) {
       registro['url'] = await this.compruebaImagenController.compruebaImagen(registro['url']);
     }
     return registros;
-
   };
 
   @get('/vistaArchivoEmpresaCount')
@@ -234,50 +199,12 @@ export class ArchivoController {
     content: { 'application/json': { schema: { type: 'object' } } },
   })
   async vistaArchivoEmpresaCount(@param.where(Archivo) where?: Where<Archivo>,): Promise<Archivo[]> {
-    const dataSource = this.archivoRepository.dataSource;
-    //Aplicamos filtros
-    let filtros = '';
     if (where !== undefined) {
-      filtros += ` WHERE 1=1`
-      //Obtiene los filtros
-      if (where) {
-        for (const [key] of Object.entries(where)) {
-          if (key === 'and' || key === 'or') {
-            {
-              let first = true
-              for (const [subKey, subValue] of Object.entries((where as any)[key])) {
-                if (subValue !== '' && subValue != null) {
-                  if (!first) {
-                    if (key === 'and') {
-                      filtros += ` AND`;
-                    }
-                    else {
-                      filtros += ` OR`;
-                    }
-                  }
-                  else {
-                    filtros += ' AND ('
-                  }
-                  if (/^-?\d+(\.\d+)?$/.test(subValue as string)) {
-                    filtros += ` ${subKey} = ${subValue}`;
-                  }
-                  else {
-                    filtros += ` ${subKey} LIKE '%${subValue}%'`;
-                  }
-                  first = false
-                }
-              }
-              if (!first) {
-                filtros += `)`;
-              }
-            }
-          }
-
-        }
-      }
-      const query = `SELECT COUNT(*) AS count FROM vista_archivo_empresa${filtros}`;
-      const registros = await dataSource.execute(query, []);
-      return registros[0];
+      return SqlFilterUtil.ejecutarQueryCount(
+        this.archivoRepository.dataSource,
+        'vista_archivo_empresa',
+        where
+      );
     }
     return [];
   }
