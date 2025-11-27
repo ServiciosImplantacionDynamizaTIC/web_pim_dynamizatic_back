@@ -19,6 +19,7 @@ import {
 } from '@loopback/rest';
 import {CalendariosDisponibilidad} from '../models';
 import {CalendariosDisponibilidadRepository} from '../repositories';
+import { SqlFilterUtil } from '../utils/sql-filter.util';
 
 export class CalendariosDisponibilidadController {
   constructor(
@@ -55,49 +56,11 @@ export class CalendariosDisponibilidadController {
   async count(
     @param.where(CalendariosDisponibilidad) where?: Where<CalendariosDisponibilidad>,
   ): Promise<Count> {
-    const dataSource = this.calendariosDisponibilidadRepository.dataSource;
-    //Aplicamos filtros
-    let filtros = '';
-    //Obtiene los filtros
-    filtros += ` WHERE 1=1`
-    if (where) {
-      for (const [key] of Object.entries(where)) {
-        if (key === 'and' || key === 'or') {
-          {
-            let first = true
-            for (const [subKey, subValue] of Object.entries((where as any)[key])) {
-              if (subValue !== '' && subValue != null) {
-                if (!first) {
-                  if (key === 'and') {
-                    filtros += ` AND`;
-                  }
-                  else {
-                    filtros += ` OR`;
-                  }
-                }
-                else {
-                  filtros += ' AND ('
-                }
-                if (/^-?\d+(\.\d+)?$/.test(subValue as string)) {
-                  filtros += ` ${subKey} = ${subValue}`;
-                }
-                else {
-                  filtros += ` ${subKey} LIKE '%${subValue}%'`;
-                }
-                first = false
-              }
-            }
-            if (!first) {
-              filtros += `)`;
-            }
-          }
-        }
-
-      }
-    }
-    const query = `SELECT COUNT(*) AS count FROM calendarios_disponibilidad${filtros}`;
-    const registros = await dataSource.execute(query, []);
-    return registros[0];
+    return SqlFilterUtil.ejecutarQueryCount(
+      this.calendariosDisponibilidadRepository.dataSource,
+      'calendarios_disponibilidad',
+      where
+    );
   }
 
   @get('/calendarios-disponibilidades')
@@ -115,7 +78,15 @@ export class CalendariosDisponibilidadController {
   async find(
     @param.filter(CalendariosDisponibilidad) filter?: Filter<CalendariosDisponibilidad>,
   ): Promise<CalendariosDisponibilidad[]> {
-    return this.calendariosDisponibilidadRepository.find(filter);
+    //
+    // Recuperamos los registros y llamamos a la función procesaRegistrosConImagenMiniatura que nos incluye las imagenMiniatura en la consulta
+    //
+    return SqlFilterUtil.ejecutarQuerySelect(
+      this.calendariosDisponibilidadRepository.dataSource,
+      'calendarios_disponibilidad',
+      filter,
+      '*'
+    );
   }
 
   @patch('/calendarios-disponibilidades')

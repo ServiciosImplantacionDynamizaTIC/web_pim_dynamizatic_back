@@ -19,6 +19,7 @@ import {
 } from '@loopback/rest';
 import {CampoDinamico} from '../models/campo-dinamico.model';
 import {CampoDinamicoRepository} from '../repositories';
+import { SqlFilterUtil } from '../utils/sql-filter.util';
 
 export class CampoDinamicoController {
   constructor(
@@ -55,49 +56,11 @@ export class CampoDinamicoController {
   async count(
     @param.where(CampoDinamico) where?: Where<CampoDinamico>,
   ): Promise<Count> {
-    const dataSource = this.campoDinamicoRepository.dataSource;
-    //Aplicamos filtros
-    let filtros = '';
-    //Obtiene los filtros
-    filtros += ` WHERE 1=1`
-    if (where) {
-      for (const [key] of Object.entries(where)) {
-        if (key === 'and' || key === 'or') {
-          {
-            let first = true
-            for (const [subKey, subValue] of Object.entries((where as any)[key])) {
-              if (subValue !== '' && subValue != null) {
-                if (!first) {
-                  if (key === 'and') {
-                    filtros += ` AND`;
-                  }
-                  else {
-                    filtros += ` OR`;
-                  }
-                }
-                else {
-                  filtros += ' AND ('
-                }
-                if (/^-?\d+(\.\d+)?$/.test(subValue as string)) {
-                  filtros += ` ${subKey} = ${subValue}`;
-                }
-                else {
-                  filtros += ` ${subKey} LIKE '%${subValue}%'`;
-                }
-                first = false
-              }
-            }
-            if (!first) {
-              filtros += `)`;
-            }
-          }
-        }
-
-      }
-    }
-    const query = `SELECT COUNT(*) AS count FROM campo_dinamico${filtros}`;
-    const registros = await dataSource.execute(query, []);
-    return registros[0];
+    return SqlFilterUtil.ejecutarQueryCount(
+      this.campoDinamicoRepository.dataSource,
+      'campo_dinamico',
+      where
+    );
   }
 
   @get('/campo-dinamicos')
@@ -115,7 +78,15 @@ export class CampoDinamicoController {
   async find(
     @param.filter(CampoDinamico) filter?: Filter<CampoDinamico>,
   ): Promise<CampoDinamico[]> {
-    return this.campoDinamicoRepository.find(filter);
+    //
+    // Recuperamos los registros y llamamos a la función procesaRegistrosConImagenMiniatura que nos incluye las imagenMiniatura en la consulta
+    //
+    return SqlFilterUtil.ejecutarQuerySelect(
+      this.campoDinamicoRepository.dataSource,
+      'campo_dinamico',
+      filter,
+      '*'
+    );
   }
 
   @patch('/campo-dinamicos')
