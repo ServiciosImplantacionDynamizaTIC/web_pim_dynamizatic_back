@@ -19,6 +19,7 @@ import {
 } from '@loopback/rest';
 import {ParametroGlobal} from '../models/parametro-global.model';
 import {ParametroGlobalRepository} from '../repositories';
+import { SqlFilterUtil } from '../utils/sql-filter.util';
 
 export class ParametroGlobalController {
   constructor(
@@ -55,7 +56,8 @@ export class ParametroGlobalController {
   async count(
     @param.where(ParametroGlobal) where?: Where<ParametroGlobal>,
   ): Promise<Count> {
-    return this.parametroGlobalRepository.count(where);
+    const dataSource = this.parametroGlobalRepository.dataSource;
+    return await SqlFilterUtil.ejecutarQueryCount(dataSource, 'parametro_global', where);
   }
 
   @get('/parametro-globals')
@@ -73,7 +75,9 @@ export class ParametroGlobalController {
   async find(
     @param.filter(ParametroGlobal) filter?: Filter<ParametroGlobal>,
   ): Promise<ParametroGlobal[]> {
-    return this.parametroGlobalRepository.find(filter);
+    const dataSource = this.parametroGlobalRepository.dataSource;
+    const camposSelect = "*"
+    return await SqlFilterUtil.ejecutarQuerySelect(dataSource, 'parametro_global', filter, camposSelect);
   }
 
   @patch('/parametro-globals')
