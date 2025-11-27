@@ -62,9 +62,9 @@ export class ConfiguracionLimpiezaLogs extends Entity {
   @property({
     type: 'string',
     length: 1,
-    mysql: {columnName: 'activo', dataType: 'char', dataLength: 1, nullable: 'Y'},
+    mysql: {columnName: 'activoSn', dataType: 'char', dataLength: 1, nullable: 'Y'},
   })
-  activo?: string;
+  activoSn?: string;
 
   constructor(data?: Partial<ConfiguracionLimpiezaLogs>) {
     super(data);
