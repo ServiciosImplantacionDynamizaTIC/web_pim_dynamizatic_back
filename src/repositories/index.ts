@@ -46,3 +46,4 @@ export * from './log-importacion.repository';
 export * from './log-sincronizacion.repository';
 export * from './configuracion-limpieza-logs.repository'
 export * from './log-accion.repository';
+export * from './traduccion-exclusiones.repository';
