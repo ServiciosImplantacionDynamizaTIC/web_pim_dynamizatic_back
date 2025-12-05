@@ -36,9 +36,6 @@ export class TraduccionInterceptor implements Provider<Interceptor> {
     invocationCtx: InvocationContext,
     next: () => ValueOrPromise<InvocationResult>,
   ) {
-    console.log('🚀 ¡¡¡ INTERCEPTOR EJECUTÁNDOSE !!!');
-    console.log('- Target Name:', invocationCtx.targetName);
-    console.log('- Method Name:', invocationCtx.methodName);
     
     try {
       // Ejecutar la consulta original primero
@@ -48,38 +45,38 @@ export class TraduccionInterceptor implements Provider<Interceptor> {
       const idiomaId = this.getIdiomaFromContext(invocationCtx);
       
       // Debug: Agregar logs para verificar funcionamiento
-      console.log('🔍 TraduccionInterceptor - Debug Info:');
-      console.log('- Endpoint:', invocationCtx.targetName);
-      console.log('- IdiomaId extraído:', idiomaId);
-      console.log('- Resultado existe:', !!result);
-      console.log('- Tipo de resultado:', Array.isArray(result) ? 'Array' : typeof result);
+      // console.log('🔍 TraduccionInterceptor - Debug Info:');
+      // console.log('- Endpoint:', invocationCtx.targetName);
+      // console.log('- IdiomaId extraído:', idiomaId);
+      // console.log('- Resultado existe:', !!result);
+      // console.log('- Tipo de resultado:', Array.isArray(result) ? 'Array' : typeof result);
       
       // Si no hay resultado, es el idioma por defecto (español = 1) o no se especifica idioma, 
       // retornar sin traducir
       if (!result || !idiomaId || idiomaId === 1) {
-        console.log('- ❌ No se aplicarán traducciones (idioma 1 o no especificado)');
+        // console.log('- ❌ No se aplicarán traducciones (idioma 1 o no especificado)');
         return result;
       }
 
       // Verificar si el resultado debe ser procesado para traducciones
       if (!this.traduccionService.debeProcesarTraduccion(result)) {
-        console.log('- ❌ El resultado no necesita procesamiento de traducción');
+        // console.log('- ❌ El resultado no necesita procesamiento de traducción');
         return result;
       }
 
       // Detectar el nombre de la tabla desde el modelo/repositorio
       const nombreTabla = await this.detectarTablaDesdeContexto(invocationCtx);
-      console.log('- 📋 Tabla detectada:', nombreTabla);
+      // console.log('- 📋 Tabla detectada:', nombreTabla);
       
       if (!nombreTabla) {
-        console.log('- ❌ No se pudo detectar el nombre de la tabla');
+        // console.log('- ❌ No se pudo detectar el nombre de la tabla');
         return result;
       }
       
       // Aplicar traducciones según el tipo de datos
-      console.log('- ✅ Aplicando traducciones...');
+      // console.log('- ✅ Aplicando traducciones...');
       const resultadoTraducido = await this.aplicarTraducciones(result, nombreTabla, idiomaId);
-      console.log('- 🎉 Traducciones aplicadas exitosamente');
+      // console.log('- 🎉 Traducciones aplicadas exitosamente');
       
       return resultadoTraducido;
 
@@ -122,9 +119,9 @@ export class TraduccionInterceptor implements Provider<Interceptor> {
    */
   private async detectarTablaDesdeContexto(ctx: InvocationContext): Promise<string | null> {
     try {
-      console.log('🔍 Detectando tabla desde contexto...');
-      console.log('- Target:', ctx.target);
-      console.log('- Target Name:', ctx.targetName);
+      // console.log('🔍 Detectando tabla desde contexto...');
+      // console.log('- Target:', ctx.target);
+      // console.log('- Target Name:', ctx.targetName);
       
       // Intentar obtener el repositorio desde el contexto del controlador
       const controllerInstance = ctx.target;
@@ -134,21 +131,21 @@ export class TraduccionInterceptor implements Provider<Interceptor> {
         for (const prop in controllerInstance) {
           if (prop.toLowerCase().includes('repository')) {
             const repository = (controllerInstance as any)[prop];
-            console.log(`- Encontrado repositorio: ${prop}`, !!repository);
+            // console.log(`- Encontrado repositorio: ${prop}`, !!repository);
             
             if (repository && repository.entityClass) {
-              console.log('- EntityClass:', repository.entityClass);
-              console.log('- EntityClass.definition:', repository.entityClass.definition);
+              // console.log('- EntityClass:', repository.entityClass);
+              // console.log('- EntityClass.definition:', repository.entityClass.definition);
               
               // Obtener el modelo y sus settings desde definition
               const modelDefinition = repository.entityClass.definition;
               if (modelDefinition && modelDefinition.settings) {
                 const modelSettings = modelDefinition.settings;
-                console.log('- Model settings:', modelSettings);
+                // console.log('- Model settings:', modelSettings);
                 
                 if (modelSettings.mysql && modelSettings.mysql.table) {
                   const tableName = modelSettings.mysql.table;
-                  console.log('✅ Tabla encontrada desde modelo:', tableName);
+                  // console.log('✅ Tabla encontrada desde modelo:', tableName);
                   return tableName;
                 }
               }
@@ -158,11 +155,11 @@ export class TraduccionInterceptor implements Provider<Interceptor> {
       }
       
       // Fallback: usar el método anterior si no se puede obtener desde el repositorio
-      console.log('- 🔄 Usando fallback: detectar desde nombre del controlador');
+      // console.log('- 🔄 Usando fallback: detectar desde nombre del controlador');
       return this.traduccionService.detectarTabla(ctx.targetName);
       
     } catch (error) {
-      console.error('❌ Error detectando tabla desde contexto:', error);
+      // console.error('❌ Error detectando tabla desde contexto:', error);
       // Fallback: usar el método anterior
       return this.traduccionService.detectarTabla(ctx.targetName);
     }
@@ -175,7 +172,7 @@ export class TraduccionInterceptor implements Provider<Interceptor> {
    */
   private getIdiomaFromContext(ctx: InvocationContext): number | null {
     try {
-      console.log('🔍 Debug getIdiomaFromContext:');
+      // console.log('🔍 Debug getIdiomaFromContext:');
       
       // Intentar diferentes formas de obtener el request
       let request: Request | undefined;
@@ -183,7 +180,7 @@ export class TraduccionInterceptor implements Provider<Interceptor> {
       // Método 1: Usando RestBindings.Http.REQUEST
       try {
         request = ctx.getSync<Request>(RestBindings.Http.REQUEST, { optional: true });
-        console.log('- Método 1 (RestBindings.Http.REQUEST):', !!request);
+        // console.log('- Método 1 (RestBindings.Http.REQUEST):', !!request);
       } catch (e) {
         console.log('- Método 1 falló:', e.message);
       }
@@ -192,7 +189,7 @@ export class TraduccionInterceptor implements Provider<Interceptor> {
       if (!request) {
         try {
           request = ctx.getSync<Request>('rest.http.request', { optional: true });
-          console.log('- Método 2 (rest.http.request):', !!request);
+          // console.log('- Método 2 (rest.http.request):', !!request);
         } catch (e) {
           console.log('- Método 2 falló:', e.message);
         }
@@ -202,33 +199,33 @@ export class TraduccionInterceptor implements Provider<Interceptor> {
       if (!request && ctx.parent) {
         try {
           request = ctx.parent.getSync<Request>(RestBindings.Http.REQUEST, { optional: true });
-          console.log('- Método 3 (parent context):', !!request);
+          // console.log('- Método 3 (parent context):', !!request);
         } catch (e) {
           console.log('- Método 3 falló:', e.message);
         }
       }
       
-      console.log('- Request final existe:', !!request);
-      console.log('- Headers existen:', !!(request && request.headers));
+      // console.log('- Request final existe:', !!request);
+      // console.log('- Headers existen:', !!(request && request.headers));
       
       if (request && request.headers) {
-        console.log('- Todos los headers:', JSON.stringify(request.headers, null, 2));
+        // console.log('- Todos los headers:', JSON.stringify(request.headers, null, 2));
         const idiomaHeader = request.headers['x-idioma-id'] as string;
-        console.log('- Header x-idioma-id:', idiomaHeader);
+        // console.log('- Header x-idioma-id:', idiomaHeader);
         
         if (idiomaHeader) {
           const idiomaId = parseInt(idiomaHeader, 10);
-          console.log('- IdiomaId parseado:', idiomaId);
+          // console.log('- IdiomaId parseado:', idiomaId);
           
           // Verificar que sea un número válido
           if (!isNaN(idiomaId) && idiomaId > 0) {
-            console.log('- ✅ IdiomaId válido:', idiomaId);
+            // console.log('- ✅ IdiomaId válido:', idiomaId);
             return idiomaId;
           }
         }
       }
 
-      console.log('- ❌ No se encontró idioma válido, devolviendo null');
+      // console.log('- ❌ No se encontró idioma válido, devolviendo null');
       return null;
 
     } catch (error) {

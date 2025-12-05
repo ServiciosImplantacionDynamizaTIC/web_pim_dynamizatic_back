@@ -100,7 +100,7 @@ export class TraduccionService {
    * @returns Nombre de la tabla en formato snake_case
    */
   detectarTabla(targetName: string): string {
-    console.log('🔍 detectarTabla - targetName recibido:', targetName);
+    // console.log('🔍 detectarTabla - targetName recibido:', targetName);
     
     let tabla = '';
     
@@ -108,23 +108,23 @@ export class TraduccionService {
     if (targetName.includes('.prototype.')) {
       // Extraer solo la primera parte antes del primer punto
       tabla = targetName.split('.')[0];
-      console.log('📝 Formato prototype detectado, antes de quitar Controller:', tabla);
+      // console.log('📝 Formato prototype detectado, antes de quitar Controller:', tabla);
       
       // Quitar 'Controller' de la primera parte
       tabla = tabla.replace(/Controller$/i, '');
-      console.log('📝 Después de quitar Controller:', tabla);
+      // console.log('📝 Después de quitar Controller:', tabla);
     }
     // Caso 2: Si viene con formato 'TablaController' o 'Tabla'
     else {
       // Quitar 'Controller' si existe al final
       tabla = targetName.replace(/Controller$/i, '');
-      console.log('📝 Después de quitar Controller:', tabla);
+      // console.log('📝 Después de quitar Controller:', tabla);
     }
     
     // Convertir a snake_case
     tabla = this.convertirASnakeCase(tabla);
     
-    console.log('✅ detectarTabla - tabla final:', tabla);
+    // console.log('✅ detectarTabla - tabla final:', tabla);
     return tabla;
   }
 
@@ -136,7 +136,7 @@ export class TraduccionService {
    * - ParametroGlobal -> parametro_global
    */
   private convertirASnakeCase(texto: string): string {
-    console.log('🔄 Convirtiendo a snake_case:', texto);
+    // console.log('🔄 Convirtiendo a snake_case:', texto);
     
     return texto
       // Insertar guión bajo antes de cada letra mayúscula (excepto la primera)
