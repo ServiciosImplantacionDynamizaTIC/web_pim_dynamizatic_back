@@ -5,7 +5,7 @@ import {SECURITY_SCHEME_SPEC} from '@loopback/authentication-jwt';
 import {AuthorizationBindings, AuthorizationComponent, AuthorizationDecision, AuthorizationOptions, AuthorizationTags} from '@loopback/authorization';
 //---------------------------------------------------------
 import {BootMixin} from '@loopback/boot';
-import {ApplicationConfig} from '@loopback/core';
+import {ApplicationConfig, createBindingFromClass} from '@loopback/core';
 import {RepositoryMixin} from '@loopback/repository';
 import {RestApplication} from '@loopback/rest';
 import {
@@ -23,6 +23,8 @@ import { JWTService } from './services/jwt-services';
 import { JWTAuthenticationStrategy } from './strategy/jwt-strategy';
 import { MyUserService } from './services/user-service';
 import { CompruebaImagenController } from './controllers/compruebaImagen.controller';
+import { TraduccionInterceptor } from './interceptors/traduccion.interceptor';
+import { TraduccionService } from './services/traduccion.service';
 
 export {ApplicationConfig};
 
@@ -54,6 +56,9 @@ export class ApiBackendApplication extends BootMixin(
     this.sequence(MySequence); // Intercepta y recibe todas las peticiones que recibe nuestra API (Valida el token)
 
     this.component(AuthenticationComponent); // Las definimos de manera GLOBAL
+
+    // Configurar interceptor de traducciones DESPUÉS de los componentes principales
+    this.setupTraduccionInterceptor();
 
     // Set up default home page
     this.static('/', path.join(__dirname, '../public'));
@@ -92,6 +97,27 @@ export class ApiBackendApplication extends BootMixin(
     this.bind(PasswordHasherBindings.ROUNDS).to(10);
     this.bind(PasswordHasherBindings.PASSWORD_HASHER).toClass(BcryptHasher); //-> Encriptación del password de usuario
     this.bind(UserServiceBindings.USER_SERVICE).toClass(MyUserService); // Servicio que usamos para validar el usuario
+    
+    // Binding para el servicio de traducciones
+    this.bind('services.TraduccionService').toClass(TraduccionService);
+  }
+
+  setupTraduccionInterceptor(): void {
+    console.log('🚀 Registrando TraduccionInterceptor...');
+    
+    // Método 1: Usando createBindingFromClass
+    const binding = createBindingFromClass(TraduccionInterceptor, {
+      key: 'interceptors.TraduccionInterceptor'
+    });
+    this.add(binding);
+    
+    // Método 2: Registrar como interceptor global
+    this.interceptor(TraduccionInterceptor, {
+      global: true,
+      group: 'translation',
+    });
+    
+    console.log('✅ TraduccionInterceptor registrado correctamente');
   }
   addSecuritySpec(): void {
     this.api({
