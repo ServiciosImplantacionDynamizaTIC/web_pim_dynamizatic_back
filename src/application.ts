@@ -24,6 +24,7 @@ import { JWTAuthenticationStrategy } from './strategy/jwt-strategy';
 import { MyUserService } from './services/user-service';
 import { CompruebaImagenController } from './controllers/compruebaImagen.controller';
 import { TraduccionInterceptor } from './interceptors/traduccion.interceptor';
+import { EscrituraTraduccionInterceptor } from './interceptors/escritura-traduccion.interceptor';
 import { TraduccionService } from './services/traduccion.service';
 
 export {ApplicationConfig};
@@ -116,8 +117,15 @@ export class ApiBackendApplication extends BootMixin(
       global: true,
       group: 'translation',
     });
+
+    // Registrar interceptor de escritura
+    console.log('🚀 Registrando EscrituraTraduccionInterceptor...');
+    this.interceptor(EscrituraTraduccionInterceptor, {
+      global: true,
+      group: 'translation-write',
+    });
     
-    console.log('✅ TraduccionInterceptor registrado correctamente');
+    console.log('✅ Interceptores de traducción registrados correctamente');
   }
   addSecuritySpec(): void {
     this.api({

@@ -149,6 +149,168 @@ export class TraduccionService {
   }
 
   /**
+   * Procesa datos antes de guardar - redirige campos traducibles a traduccion_contenido
+   * @param datos - Los datos a procesar antes de guardar
+   * @param tabla - Nombre de la tabla
+   * @param idiomaId - ID del idioma
+   * @param operacion - Tipo de operación (create, update, patch)
+   * @returns Datos procesados para guardar en tabla original
+   */
+  async procesarEscrituraTraduccion(
+    datos: any,
+    tabla: string,
+    idiomaId: number,
+    operacion: 'create' | 'update' | 'patch',
+    idRegistro?: number
+  ): Promise<any> {
+    console.log('🔄 procesarEscrituraTraduccion:', { tabla, idiomaId, operacion, idRegistro });
+    
+    // Si es español (idioma por defecto), no hacer nada especial
+    if (idiomaId === 1) {
+      console.log('- Idioma español detectado, guardando en tabla original');
+      return datos;
+    }
+
+    try {
+      // Obtener campos traducibles de esta tabla
+      const camposTraducibles = await this.obtenerCamposTraducibles(tabla);
+      console.log('- Campos traducibles:', camposTraducibles);
+
+      // Separar datos: traducibles vs no traducibles
+      const datosOriginales = { ...datos };
+      const datosTraducibles: any = {};
+
+      camposTraducibles.forEach(campo => {
+        if (datos.hasOwnProperty(campo)) {
+          datosTraducibles[campo] = datos[campo];
+          delete datosOriginales[campo]; // Quitar del objeto original
+        }
+      });
+
+      console.log('- Datos traducibles extraídos:', datosTraducibles);
+      console.log('- Datos para tabla original:', datosOriginales);
+
+      // Si hay datos traducibles, manejarlos
+      if (Object.keys(datosTraducibles).length > 0) {
+        if (operacion === 'create') {
+          // Para CREATE, necesitamos esperar a que se cree el registro para obtener el ID
+          console.log('- CREATE: Los datos traducibles se procesarán después de crear el registro');
+          // Retornar los datos originales y guardar los traducibles para procesarlos después
+          (datosOriginales as any).__pendingTranslations = datosTraducibles;
+        } else if (operacion === 'update' || operacion === 'patch') {
+          // Para UPDATE/PATCH, podemos procesar inmediatamente
+          await this.guardarCamposTraducibles(tabla, idRegistro!, datosTraducibles, idiomaId);
+        }
+      }
+
+      return datosOriginales;
+
+    } catch (error) {
+      console.error('❌ Error procesando escritura de traducción:', error);
+      // En caso de error, devolver datos originales sin modificar
+      return datos;
+    }
+  }
+
+  /**
+   * Procesa las traducciones pendientes después de un CREATE
+   */
+  async procesarTraduccionesPendientes(
+    tabla: string,
+    idRegistro: number,
+    datosOriginales: any,
+    idiomaId: number
+  ): Promise<void> {
+    if (datosOriginales.__pendingTranslations) {
+      console.log('🔄 Procesando traducciones pendientes para ID:', idRegistro);
+      await this.guardarCamposTraducibles(
+        tabla, 
+        idRegistro, 
+        datosOriginales.__pendingTranslations, 
+        idiomaId
+      );
+    }
+  }
+
+  /**
+   * Guarda campos traducibles en la tabla traduccion_contenido
+   */
+  private async guardarCamposTraducibles(
+    tabla: string,
+    idRegistro: number,
+    campos: any,
+    idiomaId: number
+  ): Promise<void> {
+    console.log('💾 Guardando campos traducibles:', { tabla, idRegistro, campos, idiomaId });
+
+    for (const [nombreCampo, valor] of Object.entries(campos)) {
+      try {
+        // Buscar si ya existe una traducción para este campo
+        const traduccionExistente = await this.traduccionContenidoRepository.findOne({
+          where: {
+            tablaReferencia: tabla,
+            idReferencia: idRegistro,
+            campo: nombreCampo,
+            idiomaId: idiomaId
+          }
+        });
+
+        if (traduccionExistente) {
+          // Actualizar traducción existente
+          await this.traduccionContenidoRepository.updateById(traduccionExistente.id, {
+            valor: valor as string,
+            usuarioModificacion: 1, // TODO: Obtener del contexto
+          });
+          console.log(`✅ Actualizada traducción: ${tabla}.${nombreCampo} [${idRegistro}] = ${valor}`);
+        } else {
+          // Crear nueva traducción
+          await this.traduccionContenidoRepository.create({
+            tablaReferencia: tabla,
+            idReferencia: idRegistro,
+            campo: nombreCampo,
+            idiomaId: idiomaId,
+            valor: valor as string,
+            usuarioCreacion: 1, // TODO: Obtener del contexto
+          });
+          console.log(`✅ Creada traducción: ${tabla}.${nombreCampo} [${idRegistro}] = ${valor}`);
+        }
+      } catch (error) {
+        console.error(`❌ Error guardando campo ${nombreCampo}:`, error);
+      }
+    }
+  }
+
+  /**
+   * Obtiene los campos traducibles de una tabla basándose en traducciones existentes
+   */
+  private async obtenerCamposTraducibles(tabla: string): Promise<string[]> {
+    try {
+      // Obtener campos únicos que ya tienen traducciones para esta tabla
+      const traduccionesExistentes = await this.traduccionContenidoRepository.execute(
+        `SELECT DISTINCT campo FROM traduccion_contenido WHERE tablaReferencia = ?`,
+        [tabla]
+      );
+
+      const camposExistentes = traduccionesExistentes.map((row: any) => row.campo);
+      console.log(`- Campos traducibles encontrados para ${tabla}:`, camposExistentes);
+
+      // Si no hay campos existentes, usar campos comunes por defecto
+      if (camposExistentes.length === 0) {
+        const camposComunes = ['nombre', 'titulo', 'descripcion', 'nombrePlantilla', 'contenido', 'texto'];
+        console.log(`- No hay traducciones existentes, usando campos comunes:`, camposComunes);
+        return camposComunes;
+      }
+
+      return camposExistentes;
+      
+    } catch (error) {
+      console.error('Error obteniendo campos traducibles:', error);
+      // Fallback a campos comunes
+      return ['nombre', 'titulo', 'descripcion', 'nombrePlantilla', 'contenido', 'texto'];
+    }
+  }
+
+  /**
    * Verifica si un resultado debe ser procesado para traducciones
    * @param data - Los datos a verificar
    * @returns true si los datos deben ser procesados
