@@ -104,9 +104,9 @@ export class Multimedia extends Entity {
     precision: 20,
     scale: 0,
     generated: false,
-    mysql: {columnName: 'tamaÃ±o_bytes', dataType: 'bigint', dataLength: null, dataPrecision: 20, dataScale: 0, nullable: 'Y', generated: false},
+    mysql: {columnName: 'tamañoBytes', dataType: 'bigint', dataLength: null, dataPrecision: 20, dataScale: 0, nullable: 'Y', generated: false},
   })
-  tamanoBytes?: number;
+  tamañoBytes?: number;
 
   @property({
     type: 'string',
