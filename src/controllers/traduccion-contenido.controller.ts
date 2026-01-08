@@ -384,7 +384,7 @@ export class TraduccionContenidoController {
   }
 
 
-  /** R E T O R N A - T A B L A S - Y - S U S - C O L U M N A S - T R A D U C I B L E S **/
+  /** R E T O R N A - T A B L A S - Y - S U S - C O L U M N A S - T R A D U C I B L E S (texto y BLOB) **/
   async obtenerTablasYSusColumnasTraducibles() {
     try {
       // Obtener exclusiones de COLUMNAS de la TABLA DE EXCLUSIONES
@@ -410,7 +410,7 @@ export class TraduccionContenidoController {
       const tablasExcluidas = exclusionesTablas.map((row: any) => row.valor.toLowerCase());
 
 
-      // Consulta TODAS LAS TABLAS y Obtiene solo columnas de tipo texto que son traducibles (solo tablas, sin vistas)
+      // Consulta TODAS LAS TABLAS y Obtiene solo columnas de tipo texto y BLOB que son traducibles (solo tablas, sin vistas)
       const resultConsultaCompletaBD = await this.traduccionContenidoRepository.execute(
         `SELECT 
         c.TABLE_NAME as tableName,
@@ -422,8 +422,8 @@ export class TraduccionContenidoController {
          ON c.TABLE_SCHEMA = t.TABLE_SCHEMA 
          AND c.TABLE_NAME = t.TABLE_NAME
        WHERE c.TABLE_SCHEMA = DATABASE()
-       -- Filtrar solo columnas de tipo texto que pueden contener contenido traducible
-       AND c.DATA_TYPE IN ('varchar', 'text', 'mediumtext', 'longtext', 'char')
+       -- Filtrar columnas de tipo texto y BLOB que pueden contener contenido traducible
+       AND c.DATA_TYPE IN ('varchar', 'text', 'mediumtext', 'longtext', 'char', 'blob', 'tinyblob', 'mediumblob', 'longblob')
        -- Excluir vistas, solo obtener tablas reales
        AND t.TABLE_TYPE = 'BASE TABLE'
        ORDER BY c.TABLE_NAME, c.ORDINAL_POSITION`
@@ -513,7 +513,10 @@ export class TraduccionContenidoController {
 
           // Procesar cada columna traducible del registro
           for (const nombreColumna of columnas as string[]) {
-            const valorCampo = registro[nombreColumna];
+            let valorCampo = registro[nombreColumna];
+
+            // Convertir datos BLOB a string si es necesario
+            valorCampo = this.procesarValorCampo(valorCampo);
 
             // Solo procesar si el campo tiene valor
             if (valorCampo && valorCampo.trim() !== '') {
@@ -938,6 +941,47 @@ export class TraduccionContenidoController {
   //     return {status: 'ERROR', mensaje: error.message};
   //   }
   // }
+
+  /** P R O C E S A R - V A L O R - C A M P O (incluye conversión BLOB a string) **/
+  private procesarValorCampo(valor: any): string {
+    try {
+      // Si es null, undefined o vacío, retornar string vacío
+      if (valor === null || valor === undefined) {
+        return '';
+      }
+
+      // Si ya es string, retornar directamente
+      if (typeof valor === 'string') {
+        return valor;
+      }
+
+      // Si es Buffer (datos BLOB), convertir a string UTF-8
+      if (Buffer.isBuffer(valor)) {
+        console.log('🔄 Convirtiendo datos BLOB a string...');
+        return valor.toString('utf8');
+      }
+
+      // Si es un array de bytes (Uint8Array), convertir a Buffer y luego a string
+      if (valor instanceof Uint8Array) {
+        console.log('🔄 Convirtiendo Uint8Array BLOB a string...');
+        return Buffer.from(valor).toString('utf8');
+      }
+
+      // Si es otro tipo de objeto, intentar convertir a string
+      if (typeof valor === 'object') {
+        console.log('🔄 Convirtiendo objeto a string...');
+        return JSON.stringify(valor);
+      }
+
+      // Para cualquier otro tipo, convertir a string
+      return String(valor);
+
+    } catch (error) {
+      console.error('❌ Error al procesar valor del campo:', error);
+      // En caso de error, retornar string vacío para evitar fallos
+      return '';
+    }
+  }
 
 }
 
