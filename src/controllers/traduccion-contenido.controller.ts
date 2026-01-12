@@ -268,69 +268,6 @@ export class TraduccionContenidoController {
     });
   }
 
-  /**
-   * Traduce un texto usando MyMemory (IA gratuita)
-   */
-  @post('/translate/mymemory')
-  @response(200, {
-    description: 'Traducción exitosa',
-    content: {
-      'application/json': {
-        schema: {
-          type: 'object',
-          properties: {
-            original: { type: 'string' },
-            translated: { type: 'string' },
-            targetLang: { type: 'string' },
-            service: { type: 'string' },
-          },
-        },
-      },
-    },
-  })
-  async traducirTextoEndpoint(
-    @requestBody({
-      content: {
-        'application/json': {
-          schema: {
-            type: 'object',
-            required: ['text', 'targetLanguage'],
-            properties: {
-              text: { type: 'string' },
-              targetLanguage: {
-                type: 'string',
-                description: 'Código del idioma destino (ej: en, de, it, fr)',
-              },
-            },
-          },
-        },
-      },
-    })
-    body: {
-      text: string;
-      targetLanguage: string;
-    },
-  ): Promise<{
-    original: string;
-    translated: string;
-    targetLang: string;
-    service: string;
-  }> {
-    try {
-      const translated = await this.traducirTexto(body.text, body.targetLanguage);
-
-      return {
-        original: body.text,
-        translated: translated,
-        targetLang: body.targetLanguage,
-        service: 'MyMemory',
-      };
-    } catch (error) {
-      console.error('Error en traducción MyMemory:', error);
-      throw error;
-    }
-  }
-
 
   //** T R A D U C I R - C O N T E N I D O - C O N - I A **// -> M E T O D O - M A N U A L **//
   @get('/traducirContenidoConIA_manual')

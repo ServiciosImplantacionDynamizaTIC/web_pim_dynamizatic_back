@@ -27,26 +27,25 @@ export class EscrituraTraduccionInterceptor implements Provider<Interceptor> {
     invocationCtx: InvocationContext,
     next: () => ValueOrPromise<InvocationResult>,
   ) {
-    console.log('📝 EscrituraTraduccionInterceptor - EJECUTÁNDOSE');
-    console.log('- Method:', invocationCtx.methodName);
-    console.log('- Target:', invocationCtx.targetName);
+    // console.log('📝 EscrituraTraduccionInterceptor - EJECUTÁNDOSE');
+    // console.log('- Method:', invocationCtx.methodName);
+    // console.log('- Target:', invocationCtx.targetName);
 
     try {
       // Verificar si es una operación de escritura
       const operacion = this.detectarOperacion(invocationCtx.methodName);
       
       if (!operacion) {
-        console.log('- No es operación de escritura, continuando...');
+        //console.log('- No es operación de escritura, continuando...');
         return await next();
       }
 
-      console.log('- Operación detectada:', operacion);
-
+      //console.log('- Operación detectada:', operacion);
       // Obtener idioma del contexto
       const idiomaId = this.getIdiomaFromContext(invocationCtx);
       
       if (!idiomaId || idiomaId === 1) {
-        console.log('- Idioma español o no especificado, guardado normal');
+        //console.log('- Idioma español o no especificado, guardado normal');
         return await next();
       }
 
@@ -54,17 +53,17 @@ export class EscrituraTraduccionInterceptor implements Provider<Interceptor> {
       const nombreTabla = await this.detectarTablaDesdeContexto(invocationCtx);
       
       if (!nombreTabla) {
-        console.log('- No se pudo detectar tabla, guardado normal');
+        // console.log('- No se pudo detectar tabla, guardado normal');
         return await next();
       }
 
-      console.log('- Procesando escritura para tabla:', nombreTabla, 'idioma:', idiomaId);
+      // console.log('- Procesando escritura para tabla:', nombreTabla, 'idioma:', idiomaId);
 
       // Procesar datos antes de guardar
       const datos = this.extraerDatos(invocationCtx);
       
       if (!datos) {
-        console.log('- No hay datos para procesar');
+        // console.log('- No hay datos para procesar');
         return await next();
       }
 
