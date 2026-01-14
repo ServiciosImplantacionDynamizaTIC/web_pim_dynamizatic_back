@@ -56,11 +56,8 @@ export class CategoriaController {
   async count(
     @param.where(Categoria) where?: Where<Categoria>,
   ): Promise<Count> {
-    return SqlFilterUtil.ejecutarQueryCount(
-      this.categoriaRepository.dataSource,
-      'categoria',
-      where
-    );
+    const dataSource = this.categoriaRepository.dataSource;
+    return await SqlFilterUtil.ejecutarQueryCount(dataSource, 'categoria', where);    
   }
 
   @get('/categorias')
@@ -78,11 +75,9 @@ export class CategoriaController {
   async find(
     @param.filter(Categoria) filter?: Filter<Categoria>,
   ): Promise<Categoria[]> {
-    return SqlFilterUtil.ejecutarQuerySelect(
-      this.categoriaRepository.dataSource,
-      'categoria',
-      filter
-    );
+    const dataSource = this.categoriaRepository.dataSource;
+    const camposSelect = "*"
+    return await SqlFilterUtil.ejecutarQuerySelect(dataSource, 'vista_con_categoriapadre', filter, camposSelect);
   }
 
   @patch('/categorias')

@@ -56,11 +56,8 @@ export class IconoController {
   async count(
     @param.where(Icono) where?: Where<Icono>,
   ): Promise<Count> {
-    return SqlFilterUtil.ejecutarQueryCount(
-      this.iconoRepository.dataSource,
-      'icono',
-      where
-    );
+    const dataSource = this.iconoRepository.dataSource;
+    return await SqlFilterUtil.ejecutarQueryCount(dataSource, 'icono', where);    
   }
 
   @get('/iconos')
@@ -78,11 +75,10 @@ export class IconoController {
   async find(
     @param.filter(Icono) filter?: Filter<Icono>,
   ): Promise<Icono[]> {
-    return SqlFilterUtil.ejecutarQuerySelect(
-      this.iconoRepository.dataSource,
-      'icono',
-      filter
-    );
+    const dataSource = this.iconoRepository.dataSource;
+    const camposSelect = "*"
+    return await SqlFilterUtil.ejecutarQuerySelect(dataSource, 'icono', filter, camposSelect);
+
   }
 
   @patch('/iconos')

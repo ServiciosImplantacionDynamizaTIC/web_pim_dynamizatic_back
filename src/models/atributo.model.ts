@@ -16,17 +16,6 @@ export class Atributo extends Entity {
 
   @property({
     type: 'number',
-    required: true,
-    jsonSchema: {nullable: false},
-    precision: 6,
-    scale: 0,
-    generated: false,
-    mysql: {columnName: 'empresaId', dataType: 'smallint', dataLength: null, dataPrecision: 6, dataScale: 0, nullable: 'N', generated: false},
-  })
-  empresaId: number;
-
-  @property({
-    type: 'number',
     jsonSchema: {nullable: true},
     precision: 11,
     scale: 0,
@@ -56,9 +45,9 @@ export class Atributo extends Entity {
   @property({
     type: 'string',
     required: true,
-    jsonSchema: {nullable: false, enum: ['texto', 'numero', 'fecha', 'booleano', 'lista', 'archivo']},
+    jsonSchema: {nullable: false, enum: ['texto', 'numero', 'fecha', 'booleano', 'lista', 'multiselect']},
     generated: false,
-    mysql: {columnName: 'tipoDato', dataType: 'enum', dataLength: null, dataPrecision: null, dataScale: null, nullable: 'N', generated: false, default: 'texto', enumValues: ['texto', 'numero', 'fecha', 'booleano', 'lista', 'archivo']},
+    mysql: {columnName: 'tipoDato', dataType: 'enum', dataLength: null, dataPrecision: null, dataScale: null, nullable: 'N', generated: false, default: 'texto', enumValues: ['texto', 'numero', 'fecha', 'booleano', 'lista', 'multiselect']},
   })
   tipoDato: string;
 

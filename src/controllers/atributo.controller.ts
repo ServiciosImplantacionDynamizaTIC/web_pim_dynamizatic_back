@@ -56,11 +56,8 @@ export class AtributoController {
   async count(
     @param.where(Atributo) where?: Where<Atributo>,
   ): Promise<Count> {
-    return SqlFilterUtil.ejecutarQueryCount(
-      this.atributoRepository.dataSource,
-      'atributo',
-      where
-    );
+    const dataSource = this.atributoRepository.dataSource;
+    return await SqlFilterUtil.ejecutarQueryCount(dataSource, 'atributo', where);        
   }
 
   @get('/atributos')
@@ -78,15 +75,9 @@ export class AtributoController {
   async find(
     @param.filter(Atributo) filter?: Filter<Atributo>,
   ): Promise<Atributo[]> {
-    //
-    // Recuperamos los registros y llamamos a la función procesaRegistrosConImagenMiniatura que nos incluye las imagenMiniatura en la consulta
-    //
-    return SqlFilterUtil.ejecutarQuerySelect(
-      this.atributoRepository.dataSource,
-      'atributo',
-      filter,
-      '*'
-    );
+    const dataSource = this.atributoRepository.dataSource;
+    const camposSelect = "*"
+    return await SqlFilterUtil.ejecutarQuerySelect(dataSource, 'vista_grupo_atributo_atributo', filter, camposSelect);
   }
 
   @patch('/atributos')

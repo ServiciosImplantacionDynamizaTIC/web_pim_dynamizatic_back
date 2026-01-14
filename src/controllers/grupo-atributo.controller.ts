@@ -56,11 +56,8 @@ export class GrupoAtributoController {
   async count(
     @param.where(GrupoAtributo) where?: Where<GrupoAtributo>,
   ): Promise<Count> {
-    return SqlFilterUtil.ejecutarQueryCount(
-      this.grupoAtributoRepository.dataSource,
-      'grupo_atributo',
-      where
-    );
+    const dataSource = this.grupoAtributoRepository.dataSource;
+    return await SqlFilterUtil.ejecutarQueryCount(dataSource, 'grupo_atributo', where);    
   }
 
   @get('/grupo-atributos')
@@ -78,11 +75,10 @@ export class GrupoAtributoController {
   async find(
     @param.filter(GrupoAtributo) filter?: Filter<GrupoAtributo>,
   ): Promise<GrupoAtributo[]> {
-    return SqlFilterUtil.ejecutarQuerySelect(
-      this.grupoAtributoRepository.dataSource,
-      'grupo_atributo',
-      filter
-    );
+    const dataSource = this.grupoAtributoRepository.dataSource;
+    const camposSelect = "*"
+    return await SqlFilterUtil.ejecutarQuerySelect(dataSource, 'grupo_atributo', filter, camposSelect);
+
   }
 
   @patch('/grupo-atributos')

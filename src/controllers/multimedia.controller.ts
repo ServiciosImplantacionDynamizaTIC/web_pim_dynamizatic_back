@@ -56,11 +56,8 @@ export class MultimediaController {
   async count(
     @param.where(Multimedia) where?: Where<Multimedia>,
   ): Promise<Count> {
-    return SqlFilterUtil.ejecutarQueryCount(
-      this.multimediaRepository.dataSource,
-      'multimedia',
-      where
-    );
+    const dataSource = this.multimediaRepository.dataSource;
+    return await SqlFilterUtil.ejecutarQueryCount(dataSource, 'multimedia', where);    
   }
 
   @get('/multimedias')
@@ -78,11 +75,9 @@ export class MultimediaController {
   async find(
     @param.filter(Multimedia) filter?: Filter<Multimedia>,
   ): Promise<Multimedia[]> {
-    return SqlFilterUtil.ejecutarQuerySelect(
-      this.multimediaRepository.dataSource,
-      'multimedia',
-      filter
-    );
+    const dataSource = this.multimediaRepository.dataSource;
+    const camposSelect = "*"
+    return await SqlFilterUtil.ejecutarQuerySelect(dataSource, 'multimedia', filter, camposSelect);
   }
 
   @patch('/multimedias')

@@ -56,11 +56,8 @@ export class CatalogoController {
   async count(
     @param.where(Catalogo) where?: Where<Catalogo>,
   ): Promise<Count> {
-    return SqlFilterUtil.ejecutarQueryCount(
-      this.catalogoRepository.dataSource,
-      'catalogo',
-      where
-    );
+    const dataSource = this.catalogoRepository.dataSource;
+    return await SqlFilterUtil.ejecutarQueryCount(dataSource, 'catalogo', where);    
   }
 
   @get('/catalogos')
@@ -78,11 +75,9 @@ export class CatalogoController {
   async find(
     @param.filter(Catalogo) filter?: Filter<Catalogo>,
   ): Promise<Catalogo[]> {
-    return SqlFilterUtil.ejecutarQuerySelect(
-      this.catalogoRepository.dataSource,
-      'catalogo',
-      filter
-    );
+    const dataSource = this.catalogoRepository.dataSource;
+    const camposSelect = "*"
+    return await SqlFilterUtil.ejecutarQuerySelect(dataSource, 'catalogo', filter, camposSelect);
   }
 
   @patch('/catalogos')

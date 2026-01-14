@@ -56,11 +56,8 @@ export class MarcaController {
   async count(
     @param.where(Marca) where?: Where<Marca>,
   ): Promise<Count> {
-    return SqlFilterUtil.ejecutarQueryCount(
-      this.marcaRepository.dataSource,
-      'marca',
-      where
-    );
+    const dataSource = this.marcaRepository.dataSource;
+    return await SqlFilterUtil.ejecutarQueryCount(dataSource, 'marca', where);    
   }
 
   @get('/marcas')
@@ -78,11 +75,9 @@ export class MarcaController {
   async find(
     @param.filter(Marca) filter?: Filter<Marca>,
   ): Promise<Marca[]> {
-    return SqlFilterUtil.ejecutarQuerySelect(
-      this.marcaRepository.dataSource,
-      'marca',
-      filter
-    );
+    const dataSource = this.marcaRepository.dataSource;
+    const camposSelect = "*"
+    return await SqlFilterUtil.ejecutarQuerySelect(dataSource, 'marca', filter, camposSelect);
   }
 
   @patch('/marcas')

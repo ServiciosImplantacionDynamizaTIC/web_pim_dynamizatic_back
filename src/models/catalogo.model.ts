@@ -46,18 +46,18 @@ export class Catalogo extends Entity {
   @property({
     type: 'string',
     required: true,
-    jsonSchema: {nullable: false, enum: ['digital', 'impreso', 'web', 'app']},
+    jsonSchema: {nullable: false, enum: ['digital', 'impreso', 'web']},
     generated: false,
-    mysql: {columnName: 'tipo', dataType: 'enum', dataLength: null, dataPrecision: null, dataScale: null, nullable: 'N', generated: false, default: 'digital', enumValues: ['digital', 'impreso', 'web', 'app']},
+    mysql: {columnName: 'tipo', dataType: 'enum', dataLength: null, dataPrecision: null, dataScale: null, nullable: 'N', generated: false, default: 'digital', enumValues: ['digital', 'impreso', 'web']},
   })
   tipo: string;
 
   @property({
     type: 'string',
     required: true,
-    jsonSchema: {nullable: false, enum: ['borrador', 'revision', 'aprobado', 'publicado']},
+    jsonSchema: {nullable: false, enum: ['borrador', 'activo', 'inactivo', 'archivado']},
     generated: false,
-    mysql: {columnName: 'estado', dataType: 'enum', dataLength: null, dataPrecision: null, dataScale: null, nullable: 'N', generated: false, default: 'borrador', enumValues: ['borrador', 'revision', 'aprobado', 'publicado']},
+    mysql: {columnName: 'estado', dataType: 'enum', dataLength: null, dataPrecision: null, dataScale: null, nullable: 'N', generated: false, default: 'borrador', enumValues: ['borrador', 'activo', 'inactivo', 'archivado']},
   })
   estado: string;
 
