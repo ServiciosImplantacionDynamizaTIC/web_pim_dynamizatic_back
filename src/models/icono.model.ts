@@ -45,13 +45,12 @@ export class Icono extends Entity {
 
   @property({
     type: 'string',
-    required: true,
-    jsonSchema: {nullable: false},
+    jsonSchema: {nullable: true},
     length: 250,
     generated: false,
-    mysql: {columnName: 'archivo', dataType: 'varchar', dataLength: 250, dataPrecision: null, dataScale: null, nullable: 'N', generated: false},
+    mysql: {columnName: 'archivo', dataType: 'varchar', dataLength: 250, dataPrecision: null, dataScale: null, nullable: 'Y', generated: false},
   })
-  archivo: string;
+  archivo?: string;
 
   @property({
     type: 'string',
