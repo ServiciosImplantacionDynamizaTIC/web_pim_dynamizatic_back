@@ -26,6 +26,16 @@ export class Multimedia extends Entity {
   empresaId: number;
 
   @property({
+    type: 'number',
+    jsonSchema: {nullable: true},
+    precision: 11,
+    scale: 0,
+    generated: false,
+    mysql: {columnName: 'categoriaId', dataType: 'int', dataLength: null, dataPrecision: 11, dataScale: 0, nullable: 'Y', generated: false},
+  })
+  categoriaId?: number;
+
+  @property({
     type: 'string',
     required: true,
     jsonSchema: {nullable: false},
@@ -46,67 +56,12 @@ export class Multimedia extends Entity {
   @property({
     type: 'string',
     required: true,
-    jsonSchema: {nullable: false, enum: ['imagen', 'video', 'audio', 'documento']},
-    generated: false,
-    mysql: {columnName: 'tipo', dataType: 'enum', dataLength: null, dataPrecision: null, dataScale: null, nullable: 'N', generated: false, enumValues: ['imagen', 'video', 'audio', 'documento']},
-  })
-  tipo: string;
-
-  @property({
-    type: 'string',
-    jsonSchema: {nullable: true},
+    jsonSchema: {nullable: false},
     length: 50,
     generated: false,
-    mysql: {columnName: 'formato', dataType: 'varchar', dataLength: 50, dataPrecision: null, dataScale: null, nullable: 'Y', generated: false},
+    mysql: {columnName: 'tipo', dataType: 'varchar', dataLength: 50, dataPrecision: null, dataScale: null, nullable: 'N', generated: false},
   })
-  formato?: string;
-
-  @property({
-    type: 'string',
-    required: true,
-    jsonSchema: {nullable: false},
-    length: 250,
-    generated: false,
-    mysql: {columnName: 'archivoOriginal', dataType: 'varchar', dataLength: 250, dataPrecision: null, dataScale: null, nullable: 'N', generated: false},
-  })
-  archivoOriginal: string;
-
-  @property({
-    type: 'string',
-    jsonSchema: {nullable: true},
-    length: 250,
-    generated: false,
-    mysql: {columnName: 'archivoThumbnail', dataType: 'varchar', dataLength: 250, dataPrecision: null, dataScale: null, nullable: 'Y', generated: false},
-  })
-  archivoThumbnail?: string;
-
-  @property({
-    type: 'string',
-    jsonSchema: {nullable: true},
-    length: 250,
-    generated: false,
-    mysql: {columnName: 'archivoMedio', dataType: 'varchar', dataLength: 250, dataPrecision: null, dataScale: null, nullable: 'Y', generated: false},
-  })
-  archivoMedio?: string;
-
-  @property({
-    type: 'string',
-    jsonSchema: {nullable: true},
-    length: 250,
-    generated: false,
-    mysql: {columnName: 'archivoGrande', dataType: 'varchar', dataLength: 250, dataPrecision: null, dataScale: null, nullable: 'Y', generated: false},
-  })
-  archivoGrande?: string;
-
-  @property({
-    type: 'number',
-    jsonSchema: {nullable: true},
-    precision: 20,
-    scale: 0,
-    generated: false,
-    mysql: {columnName: 'tamañoBytes', dataType: 'bigint', dataLength: null, dataPrecision: 20, dataScale: 0, nullable: 'Y', generated: false},
-  })
-  tamañoBytes?: number;
+  tipo: string;
 
   @property({
     type: 'string',

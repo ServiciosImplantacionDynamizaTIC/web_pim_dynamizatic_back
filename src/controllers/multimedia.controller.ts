@@ -77,7 +77,7 @@ export class MultimediaController {
   ): Promise<Multimedia[]> {
     const dataSource = this.multimediaRepository.dataSource;
     const camposSelect = "*"
-    return await SqlFilterUtil.ejecutarQuerySelect(dataSource, 'multimedia', filter, camposSelect);
+    return await SqlFilterUtil.ejecutarQuerySelect(dataSource, 'vista_multimedia_categoria', filter, camposSelect);
   }
 
   @patch('/multimedias')
