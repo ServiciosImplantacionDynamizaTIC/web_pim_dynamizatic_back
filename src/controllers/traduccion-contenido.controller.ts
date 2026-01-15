@@ -19,6 +19,7 @@ import {
 } from '@loopback/rest';
 import { TraduccionContenido } from '../models/traduccion-contenido.model';
 import { TraduccionContenidoRepository, TraduccionExclusionesRepository, IdiomaRepository } from '../repositories';
+import { SqlFilterUtil } from '../utils/sql-filter.util';
 
 export class TraduccionContenidoController {
   constructor(
@@ -59,7 +60,8 @@ export class TraduccionContenidoController {
   async count(
     @param.where(TraduccionContenido) where?: Where<TraduccionContenido>,
   ): Promise<Count> {
-    return this.traduccionContenidoRepository.count(where);
+    const dataSource = this.traduccionContenidoRepository.dataSource;
+    return await SqlFilterUtil.ejecutarQueryCount(dataSource, 'traduccion_contenido', where);  
   }
 
   @get('/traduccion-contenidos')
@@ -77,7 +79,9 @@ export class TraduccionContenidoController {
   async find(
     @param.filter(TraduccionContenido) filter?: Filter<TraduccionContenido>,
   ): Promise<TraduccionContenido[]> {
-    return this.traduccionContenidoRepository.find(filter);
+    const dataSource = this.traduccionContenidoRepository.dataSource;
+    const camposSelect = "*"
+    return await SqlFilterUtil.ejecutarQuerySelect(dataSource, 'traduccion_contenido', filter, camposSelect);
   }
 
   @patch('/traduccion-contenidos')

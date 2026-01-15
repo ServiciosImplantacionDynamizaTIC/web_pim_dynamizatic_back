@@ -57,7 +57,8 @@ export class TipoArchivoController {
   async count(
     @param.where(TipoArchivo) where?: Where<TipoArchivo>,
   ): Promise<Count> {
-    return this.tipoArchivoRepository.count(where);
+    const dataSource = this.tipoArchivoRepository.dataSource;
+    return await SqlFilterUtil.ejecutarQueryCount(dataSource, 'tipo_archivo', where);  
   }
 
   @get('/tipo-archivos')
@@ -75,7 +76,9 @@ export class TipoArchivoController {
   async find(
     @param.filter(TipoArchivo) filter?: Filter<TipoArchivo>,
   ): Promise<TipoArchivo[]> {
-    return this.tipoArchivoRepository.find(filter);
+    const dataSource = this.tipoArchivoRepository.dataSource;
+    const camposSelect = "*"
+    return await SqlFilterUtil.ejecutarQuerySelect(dataSource, 'tipo_archivo', filter, camposSelect);
   }
 
   @patch('/tipo-archivos')

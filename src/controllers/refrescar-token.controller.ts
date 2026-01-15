@@ -19,6 +19,7 @@ import {
 } from '@loopback/rest';
 import {RefrescarToken} from '../models';
 import {RefrescarTokenRepository} from '../repositories';
+import { SqlFilterUtil } from '../utils/sql-filter.util';
 
 export class RefrescarTokenController {
   constructor(
@@ -55,7 +56,8 @@ export class RefrescarTokenController {
   async count(
     @param.where(RefrescarToken) where?: Where<RefrescarToken>,
   ): Promise<Count> {
-    return this.refrescarTokenRepository.count(where);
+    const dataSource = this.refrescarTokenRepository.dataSource;
+    return await SqlFilterUtil.ejecutarQueryCount(dataSource, 'refrescar_token', where);  
   }
 
   @get('/refrescar-tokens')
@@ -73,7 +75,9 @@ export class RefrescarTokenController {
   async find(
     @param.filter(RefrescarToken) filter?: Filter<RefrescarToken>,
   ): Promise<RefrescarToken[]> {
-    return this.refrescarTokenRepository.find(filter);
+    const dataSource = this.refrescarTokenRepository.dataSource;
+    const camposSelect = "*"
+    return await SqlFilterUtil.ejecutarQuerySelect(dataSource, 'refrescar_token', filter, camposSelect);
   }
 
   @patch('/refrescar-tokens')

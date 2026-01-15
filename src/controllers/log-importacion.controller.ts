@@ -19,6 +19,7 @@ import {
 } from '@loopback/rest';
 import {LogImportacion} from '../models/log-importacion.model';
 import {LogImportacionRepository} from '../repositories';
+import { SqlFilterUtil } from '../utils/sql-filter.util';
 
 export class LogImportacionController {
   constructor(
@@ -55,7 +56,8 @@ export class LogImportacionController {
   async count(
     @param.where(LogImportacion) where?: Where<LogImportacion>,
   ): Promise<Count> {
-    return this.logImportacionRepository.count(where);
+    const dataSource = this.logImportacionRepository.dataSource;
+    return await SqlFilterUtil.ejecutarQueryCount(dataSource, 'log_importacion', where);  
   }
 
   @get('/log-importacions')
@@ -73,7 +75,9 @@ export class LogImportacionController {
   async find(
     @param.filter(LogImportacion) filter?: Filter<LogImportacion>,
   ): Promise<LogImportacion[]> {
-    return this.logImportacionRepository.find(filter);
+    const dataSource = this.logImportacionRepository.dataSource;
+    const camposSelect = "*"
+    return await SqlFilterUtil.ejecutarQuerySelect(dataSource, 'log_importacion', filter, camposSelect);
   }
 
   @patch('/log-importacions')

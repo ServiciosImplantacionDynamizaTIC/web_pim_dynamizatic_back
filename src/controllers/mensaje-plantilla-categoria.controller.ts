@@ -19,6 +19,7 @@ import {
 } from '@loopback/rest';
 import {MensajePlantillaCategoria} from '../models';
 import {MensajePlantillaCategoriaRepository} from '../repositories';
+import { SqlFilterUtil } from '../utils/sql-filter.util';
 
 export class MensajePlantillaCategoriaController {
   constructor(
@@ -55,7 +56,8 @@ export class MensajePlantillaCategoriaController {
   async count(
     @param.where(MensajePlantillaCategoria) where?: Where<MensajePlantillaCategoria>,
   ): Promise<Count> {
-    return this.mensajePlantillaCategoriaRepository.count(where);
+    const dataSource = this.mensajePlantillaCategoriaRepository.dataSource;
+    return await SqlFilterUtil.ejecutarQueryCount(dataSource, 'mensaje_plantilla_categoria', where);  
   }
 
   @get('/mensaje-plantilla-categorias')
@@ -73,7 +75,9 @@ export class MensajePlantillaCategoriaController {
   async find(
     @param.filter(MensajePlantillaCategoria) filter?: Filter<MensajePlantillaCategoria>,
   ): Promise<MensajePlantillaCategoria[]> {
-    return this.mensajePlantillaCategoriaRepository.find(filter);
+    const dataSource = this.mensajePlantillaCategoriaRepository.dataSource;
+    const camposSelect = "*"
+    return await SqlFilterUtil.ejecutarQuerySelect(dataSource, 'mensaje_plantilla_categoria', filter, camposSelect);
   }
 
   @patch('/mensaje-plantilla-categorias')

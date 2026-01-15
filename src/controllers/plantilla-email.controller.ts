@@ -63,7 +63,8 @@ export class PlantillaEmailController {
   async count(
     @param.where(PlantillaEmail) where?: Where<PlantillaEmail>,
   ): Promise<Count> {
-    return this.plantillaEmailRepository.count(where);
+    const dataSource = this.plantillaEmailRepository.dataSource;
+    return await SqlFilterUtil.ejecutarQueryCount(dataSource, 'plantilla_email', where);    
   }
 
   @get('/plantilla-emails')
@@ -81,7 +82,10 @@ export class PlantillaEmailController {
   async find(
     @param.filter(PlantillaEmail) filter?: Filter<PlantillaEmail>,
   ): Promise<PlantillaEmail[]> {
-    return this.plantillaEmailRepository.find(filter);
+    const dataSource = this.plantillaEmailRepository.dataSource;
+    const camposSelect = "*"
+    return await SqlFilterUtil.ejecutarQuerySelect(dataSource, 'vista_multimedia_categoria', filter, camposSelect);
+
   }
 
   @patch('/plantilla-emails')

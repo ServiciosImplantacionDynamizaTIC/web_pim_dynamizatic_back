@@ -19,6 +19,7 @@ import {
 } from '@loopback/rest';
 import {MensajeTipo} from '../models';
 import {MensajeTipoRepository} from '../repositories';
+import { SqlFilterUtil } from '../utils/sql-filter.util';
 
 export class MensajeTipoController {
   constructor(
@@ -55,7 +56,8 @@ export class MensajeTipoController {
   async count(
     @param.where(MensajeTipo) where?: Where<MensajeTipo>,
   ): Promise<Count> {
-    return this.mensajeTipoRepository.count(where);
+    const dataSource = this.mensajeTipoRepository.dataSource;
+    return await SqlFilterUtil.ejecutarQueryCount(dataSource, 'mensaje_tipo', where);  
   }
 
   @get('/mensaje-tipos')
@@ -73,7 +75,9 @@ export class MensajeTipoController {
   async find(
     @param.filter(MensajeTipo) filter?: Filter<MensajeTipo>,
   ): Promise<MensajeTipo[]> {
-    return this.mensajeTipoRepository.find(filter);
+    const dataSource = this.mensajeTipoRepository.dataSource;
+    const camposSelect = "*"
+    return await SqlFilterUtil.ejecutarQuerySelect(dataSource, 'mensaje_tipo', filter, camposSelect);
   }
 
   @patch('/mensaje-tipos')

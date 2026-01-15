@@ -19,6 +19,7 @@ import {
 } from '@loopback/rest';
 import {ProductoMarketplace} from '../models/producto-marketplace.model';
 import {ProductoMarketplaceRepository} from '../repositories';
+import { SqlFilterUtil } from '../utils/sql-filter.util';
 
 export class ProductoMarketplaceController {
   constructor(
@@ -55,7 +56,8 @@ export class ProductoMarketplaceController {
   async count(
     @param.where(ProductoMarketplace) where?: Where<ProductoMarketplace>,
   ): Promise<Count> {
-    return this.productoMarketplaceRepository.count(where);
+    const dataSource = this.productoMarketplaceRepository.dataSource;
+    return await SqlFilterUtil.ejecutarQueryCount(dataSource, 'producto_marketplace', where);  
   }
 
   @get('/producto-marketplaces')
@@ -73,7 +75,9 @@ export class ProductoMarketplaceController {
   async find(
     @param.filter(ProductoMarketplace) filter?: Filter<ProductoMarketplace>,
   ): Promise<ProductoMarketplace[]> {
-    return this.productoMarketplaceRepository.find(filter);
+    const dataSource = this.productoMarketplaceRepository.dataSource;
+    const camposSelect = "*"
+    return await SqlFilterUtil.ejecutarQuerySelect(dataSource, 'producto_marketplace', filter, camposSelect);
   }
 
   @patch('/producto-marketplaces')

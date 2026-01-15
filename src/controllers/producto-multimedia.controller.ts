@@ -19,6 +19,7 @@ import {
 } from '@loopback/rest';
 import {ProductoMultimedia} from '../models/producto-multimedia.model';
 import {ProductoMultimediaRepository} from '../repositories';
+import { SqlFilterUtil } from '../utils/sql-filter.util';
 
 export class ProductoMultimediaController {
   constructor(
@@ -55,7 +56,8 @@ export class ProductoMultimediaController {
   async count(
     @param.where(ProductoMultimedia) where?: Where<ProductoMultimedia>,
   ): Promise<Count> {
-    return this.productoMultimediaRepository.count(where);
+    const dataSource = this.productoMultimediaRepository.dataSource;
+    return await SqlFilterUtil.ejecutarQueryCount(dataSource, 'producto_multimedia', where);  
   }
 
   @get('/producto-multimedias')
@@ -73,7 +75,9 @@ export class ProductoMultimediaController {
   async find(
     @param.filter(ProductoMultimedia) filter?: Filter<ProductoMultimedia>,
   ): Promise<ProductoMultimedia[]> {
-    return this.productoMultimediaRepository.find(filter);
+    const dataSource = this.productoMultimediaRepository.dataSource;
+    const camposSelect = "*"
+    return await SqlFilterUtil.ejecutarQuerySelect(dataSource, 'producto_multimedia', filter, camposSelect);
   }
 
   @patch('/producto-multimedias')

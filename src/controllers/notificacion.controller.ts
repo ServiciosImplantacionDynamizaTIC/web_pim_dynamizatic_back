@@ -19,6 +19,7 @@ import {
 } from '@loopback/rest';
 import {Notificacion} from '../models/notificacion.model';
 import {NotificacionRepository} from '../repositories';
+import { SqlFilterUtil } from '../utils/sql-filter.util';
 
 export class NotificacionController {
   constructor(
@@ -55,7 +56,8 @@ export class NotificacionController {
   async count(
     @param.where(Notificacion) where?: Where<Notificacion>,
   ): Promise<Count> {
-    return this.notificacionRepository.count(where);
+    const dataSource = this.notificacionRepository.dataSource;
+    return await SqlFilterUtil.ejecutarQueryCount(dataSource, 'notificacion', where);  
   }
 
   @get('/notificacions')
@@ -73,7 +75,9 @@ export class NotificacionController {
   async find(
     @param.filter(Notificacion) filter?: Filter<Notificacion>,
   ): Promise<Notificacion[]> {
-    return this.notificacionRepository.find(filter);
+    const dataSource = this.notificacionRepository.dataSource;
+    const camposSelect = "*"
+    return await SqlFilterUtil.ejecutarQuerySelect(dataSource, 'notificacion', filter, camposSelect);
   }
 
   @patch('/notificacions')

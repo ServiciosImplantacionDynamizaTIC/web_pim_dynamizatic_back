@@ -19,6 +19,7 @@ import {
 } from '@loopback/rest';
 import {Tarea} from '../models/tarea.model';
 import {TareaRepository} from '../repositories';
+import { SqlFilterUtil } from '../utils/sql-filter.util';
 
 export class TareaController {
   constructor(
@@ -55,7 +56,8 @@ export class TareaController {
   async count(
     @param.where(Tarea) where?: Where<Tarea>,
   ): Promise<Count> {
-    return this.tareaRepository.count(where);
+    const dataSource = this.tareaRepository.dataSource;
+    return await SqlFilterUtil.ejecutarQueryCount(dataSource, 'tarea', where);  
   }
 
   @get('/tareas')
@@ -73,7 +75,9 @@ export class TareaController {
   async find(
     @param.filter(Tarea) filter?: Filter<Tarea>,
   ): Promise<Tarea[]> {
-    return this.tareaRepository.find(filter);
+    const dataSource = this.tareaRepository.dataSource;
+    const camposSelect = "*"
+    return await SqlFilterUtil.ejecutarQuerySelect(dataSource, 'tarea', filter, camposSelect);
   }
 
   @patch('/tareas')

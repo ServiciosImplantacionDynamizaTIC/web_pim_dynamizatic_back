@@ -19,6 +19,7 @@ import {
 } from '@loopback/rest';
 import {ProductoIcono} from '../models/producto-icono.model';
 import {ProductoIconoRepository} from '../repositories';
+import { SqlFilterUtil } from '../utils/sql-filter.util';
 
 export class ProductoIconoController {
   constructor(
@@ -55,7 +56,8 @@ export class ProductoIconoController {
   async count(
     @param.where(ProductoIcono) where?: Where<ProductoIcono>,
   ): Promise<Count> {
-    return this.productoIconoRepository.count(where);
+    const dataSource = this.productoIconoRepository.dataSource;
+    return await SqlFilterUtil.ejecutarQueryCount(dataSource, 'producto_icono', where);  
   }
 
   @get('/producto-iconos')
@@ -73,7 +75,9 @@ export class ProductoIconoController {
   async find(
     @param.filter(ProductoIcono) filter?: Filter<ProductoIcono>,
   ): Promise<ProductoIcono[]> {
-    return this.productoIconoRepository.find(filter);
+    const dataSource = this.productoIconoRepository.dataSource;
+    const camposSelect = "*"
+    return await SqlFilterUtil.ejecutarQuerySelect(dataSource, 'producto_icono', filter, camposSelect);
   }
 
   @patch('/producto-iconos')

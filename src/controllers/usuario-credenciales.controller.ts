@@ -20,6 +20,7 @@ import {
 } from '@loopback/rest';
 import { UsuarioCredenciales } from '../models';
 import { UsuarioCredencialesRepository } from '../repositories';
+import { SqlFilterUtil } from '../utils/sql-filter.util';
 @authenticate('jwt')
 export class UsuarioCredencialesController {
   constructor(
@@ -56,7 +57,8 @@ export class UsuarioCredencialesController {
   async count(
     @param.where(UsuarioCredenciales) where?: Where<UsuarioCredenciales>,
   ): Promise<Count> {
-    return this.usuarioCredencialesRepository.count(where);
+    const dataSource = this.usuarioCredencialesRepository.dataSource;
+    return await SqlFilterUtil.ejecutarQueryCount(dataSource, 'usuario_credenciales', where);  
   }
 
   @get('/usuario-credenciales')
@@ -74,7 +76,9 @@ export class UsuarioCredencialesController {
   async find(
     @param.filter(UsuarioCredenciales) filter?: Filter<UsuarioCredenciales>,
   ): Promise<UsuarioCredenciales[]> {
-    return this.usuarioCredencialesRepository.find(filter);
+    const dataSource = this.usuarioCredencialesRepository.dataSource;
+    const camposSelect = "*"
+    return await SqlFilterUtil.ejecutarQuerySelect(dataSource, 'usuario_credenciales', filter, camposSelect);
   }
 
   @patch('/usuario-credenciales')

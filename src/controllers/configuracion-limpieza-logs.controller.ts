@@ -20,6 +20,7 @@ import {
 } from '@loopback/rest';
 import { ConfiguracionLimpiezaLogs } from '../models';
 import { ConfiguracionLimpiezaLogsRepository } from '../repositories';
+import { SqlFilterUtil } from '../utils/sql-filter.util';
 
 @authenticate('jwt')
 export class ConfiguracionLimpiezaLogsController {
@@ -57,7 +58,9 @@ export class ConfiguracionLimpiezaLogsController {
   async count(
     @param.where(ConfiguracionLimpiezaLogs) where?: Where<ConfiguracionLimpiezaLogs>,
   ): Promise<Count> {
-    return this.configuracionLimpiezaLogsRepository.count(where);
+    const dataSource = this.configuracionLimpiezaLogsRepository.dataSource;
+    return await SqlFilterUtil.ejecutarQueryCount(dataSource, 'configuracion_limpieza_logs', where);    
+
   }
 
   @get('/configuracion-limpieza-logs')
@@ -75,7 +78,10 @@ export class ConfiguracionLimpiezaLogsController {
   async find(
     @param.filter(ConfiguracionLimpiezaLogs) filter?: Filter<ConfiguracionLimpiezaLogs>,
   ): Promise<ConfiguracionLimpiezaLogs[]> {
-    return this.configuracionLimpiezaLogsRepository.find(filter);
+    const dataSource = this.configuracionLimpiezaLogsRepository.dataSource;
+    const camposSelect = "*"
+    return await SqlFilterUtil.ejecutarQuerySelect(dataSource, 'configuracion_limpieza_logs', filter, camposSelect);
+
   }
 
   @patch('/configuracion-limpieza-logs')

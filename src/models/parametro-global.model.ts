@@ -16,13 +16,14 @@ export class ParametroGlobal extends Entity {
 
   @property({
     type: 'number',
-    jsonSchema: {nullable: true},
+    required: true,
+    jsonSchema: {nullable: false},
     precision: 6,
     scale: 0,
     generated: false,
-    mysql: {columnName: 'empresaId', dataType: 'smallint', dataLength: null, dataPrecision: 6, dataScale: 0, nullable: 'Y', generated: false},
+    mysql: {columnName: 'empresaId', dataType: 'smallint', dataLength: null, dataPrecision: 6, dataScale: 0, nullable: 'N', generated: false},
   })
-  empresaId?: number;
+  empresaId: number;
   
   @property({
     type: 'string',

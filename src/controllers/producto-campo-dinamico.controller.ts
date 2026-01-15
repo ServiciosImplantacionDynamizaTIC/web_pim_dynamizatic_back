@@ -19,6 +19,7 @@ import {
 } from '@loopback/rest';
 import {ProductoCampoDinamico} from '../models/producto-campo-dinamico.model';
 import {ProductoCampoDinamicoRepository} from '../repositories';
+import { SqlFilterUtil } from '../utils/sql-filter.util';
 
 export class ProductoCampoDinamicoController {
   constructor(
@@ -55,7 +56,8 @@ export class ProductoCampoDinamicoController {
   async count(
     @param.where(ProductoCampoDinamico) where?: Where<ProductoCampoDinamico>,
   ): Promise<Count> {
-    return this.productoCampoDinamicoRepository.count(where);
+    const dataSource = this.productoCampoDinamicoRepository.dataSource;
+    return await SqlFilterUtil.ejecutarQueryCount(dataSource, 'producto_campo_dinamico', where);  
   }
 
   @get('/producto-campo-dinamicos')
@@ -73,7 +75,9 @@ export class ProductoCampoDinamicoController {
   async find(
     @param.filter(ProductoCampoDinamico) filter?: Filter<ProductoCampoDinamico>,
   ): Promise<ProductoCampoDinamico[]> {
-    return this.productoCampoDinamicoRepository.find(filter);
+    const dataSource = this.productoCampoDinamicoRepository.dataSource;
+    const camposSelect = "*"
+    return await SqlFilterUtil.ejecutarQuerySelect(dataSource, 'producto_campo_dinamico', filter, camposSelect);
   }
 
   @patch('/producto-campo-dinamicos')

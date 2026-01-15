@@ -19,6 +19,7 @@ import {
 } from '@loopback/rest';
 import {ProductoAtributo} from '../models/producto-atributo.model';
 import {ProductoAtributoRepository} from '../repositories';
+import { SqlFilterUtil } from '../utils/sql-filter.util';
 
 export class ProductoAtributoController {
   constructor(
@@ -55,7 +56,8 @@ export class ProductoAtributoController {
   async count(
     @param.where(ProductoAtributo) where?: Where<ProductoAtributo>,
   ): Promise<Count> {
-    return this.productoAtributoRepository.count(where);
+    const dataSource = this.productoAtributoRepository.dataSource;
+    return await SqlFilterUtil.ejecutarQueryCount(dataSource, 'producto_atributo', where);  
   }
 
   @get('/producto-atributos')
@@ -73,7 +75,9 @@ export class ProductoAtributoController {
   async find(
     @param.filter(ProductoAtributo) filter?: Filter<ProductoAtributo>,
   ): Promise<ProductoAtributo[]> {
-    return this.productoAtributoRepository.find(filter);
+    const dataSource = this.productoAtributoRepository.dataSource;
+    const camposSelect = "*"
+    return await SqlFilterUtil.ejecutarQuerySelect(dataSource, 'producto_atributo', filter, camposSelect);
   }
 
   @patch('/producto-atributos')
