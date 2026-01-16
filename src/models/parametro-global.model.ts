@@ -62,15 +62,6 @@ export class ParametroGlobal extends Entity {
   tipoDato: string;
 
   @property({
-    type: 'string',
-    jsonSchema: {nullable: true},
-    length: 1,
-    generated: false,
-    mysql: {columnName: 'modificable', dataType: 'varchar', dataLength: 1, dataPrecision: null, dataScale: null, nullable: 'Y', generated: false, default: 'S'},
-  })
-  modificable?: string;
-
-  @property({
     type: 'date',
     jsonSchema: {nullable: true},
     generated: false,
